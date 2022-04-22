@@ -12,7 +12,7 @@ InGameMenuUpgradableFactories.CONTROLS = {
 function InGameMenuUpgradableFactories.new(i18n, messageCenter)
     local self = InGameMenuUpgradableFactories:superClass().new(nil, InGameMenuUpgradableFactories._mt)
     
-    self.name = "InGameMenuUpgradableFactories"
+    self.name = "inGameMenuUpgradableFactories"
     self.i18n = i18n
     self.messageCenter = messageCenter
     self.factories = {}
@@ -29,18 +29,18 @@ function InGameMenuUpgradableFactories.new(i18n, messageCenter)
             self:upgrade()
         end
     }
-    self.btnSell = {
-        text = "Sell",
-        inputAction = InputAction.MENU_EXTRA_1,
-        callback = function ()
-            self:sell()
-        end
-    }
+    -- self.btnSell = {
+    --     text = "Sell",
+    --     inputAction = InputAction.MENU_EXTRA_1,
+    --     callback = function ()
+    --         self:sell()
+    --     end
+    -- }
     
     self:setMenuButtonInfo({
         self.backButtonInfo,
         self.btnUpgrade,
-        self.btnSell
+        -- self.btnSell
     })
     
     return self
@@ -80,14 +80,6 @@ function InGameMenuUpgradableFactories:onFrameClose()
     InGameMenuUpgradableFactories:superClass().onFrameClose(self)
 end
 
-local function tabLen(tab)
-    local n = 0
-    for _,_ in pairs(tab) do
-        n = n +1
-    end
-    return n
-end
-
 function InGameMenuUpgradableFactories:lookForPCMFactories()
     for _,f in ipairs(g_currentMission.productionChainManager.productionPoints) do
         if f.isOwned and not self:getFactoryById(f.id) then
@@ -96,7 +88,7 @@ function InGameMenuUpgradableFactories:lookForPCMFactories()
                 name = f:getName(),
                 level = 1,
                 basePrice = f.owningPlaceable:getPrice(),
-                upgradePrice = f.owningPlaceable:getPrice(),
+                -- upgradePrice = f.owningPlaceable:getPrice(),
                 productions = {},
                 baseCapacities = {}
             }
@@ -155,23 +147,51 @@ function InGameMenuUpgradableFactories:getTitleForSectionHeader(list, section)
 end
 
 function InGameMenuUpgradableFactories:populateCellForItemInSection(list, section, index, cell)
-    local fact = self.factories[index]
-    cell:getAttribute("factory"):setText(fact.name)
-    cell:getAttribute("level"):setText(fact.level)
-    cell:getAttribute("value"):setText(g_i18n:formatMoney(fact.basePrice * fact.level))
-    cell:getAttribute("cost"):setText(g_i18n:formatMoney(fact.upgradePrice))
+    local f = self.factories[index]
+    cell:getAttribute("factory"):setText(f.name)
+    cell:getAttribute("level"):setText(f.level)
+    cell:getAttribute("value"):setText(g_i18n:formatMoney(f.basePrice * f.level))
+    cell:getAttribute("cost"):setText(g_i18n:formatMoney(self:adjUpgradePrice2lvl(f.basePrice, f.level)))
 end
 
 function InGameMenuUpgradableFactories:onListSelectionChanged(list, section, index)
     self.selectedFactory = self.factories[index]
 end
 
+-- function InGameMenuUpgradableFactories:sell()
+--     local text = string.format(
+--         "Sell %s for %s?",
+--         self.selectedFactory.name,
+--         g_i18n:formatMoney(self:adjSellPrice2lvl(self.selectedFactory.basePrice, self.selectedFactory.level))
+--     )
+--     g_gui:showYesNoDialog(
+--         {
+--             text = text,
+--             title = "Sell Factory",
+--             callback = self.onSellConfirm,
+--             target = self
+--         }
+--     )
+-- end
+
+-- function InGameMenuUpgradableFactories:onSellConfirm(confirm)
+--     if confirm then
+--         local saveId = self:getPCMFactoryById(self.selectedFactory.id).owningPlaceable.currentSavegameId
+--         print(saveId)
+--         print(type(saveId))
+--         local placeable = g_currentMission.placeableSystem.savegameIdToPlaceable[saveId]
+--         g_currentMission.placeableSystem:removePlaceable(placeable)
+        
+--     end
+-- end
+
 function InGameMenuUpgradableFactories:upgrade()
     if g_currentMission.missionInfo.money >= self.selectedFactory.basePrice then
+        local upgradePrice = self:adjUpgradePrice2lvl(self.selectedFactory.basePrice, self.selectedFactory.level)
         local text = string.format(
             "Upgrade %s for %s?",
             self.selectedFactory.name,
-            g_i18n:formatMoney(self.selectedFactory.upgradePrice)
+            g_i18n:formatMoney(upgradePrice)
         )
         g_gui:showYesNoDialog(
             {
@@ -186,9 +206,9 @@ end
 
 function InGameMenuUpgradableFactories:onUpgradeConfirm(confirm)
     if confirm then
-        g_currentMission:addMoney(-self.selectedFactory.upgradePrice, 1--[[farmId]], MoneyType.SHOP_PROPERTY_BUY, true, true)
+        local upgradePrice = self:adjUpgradePrice2lvl(self.selectedFactory.basePrice, self.selectedFactory.level)
+        g_currentMission:addMoney(-upgradePrice, 1--[[farmId]], MoneyType.SHOP_PROPERTY_BUY, true, true)
         self.selectedFactory.level = self.selectedFactory.level + 1
-        self.selectedFactory.upgradePrice = self:adjUpgradePrice2lvl(self.selectedFactory.basePrice, self.selectedFactory.level)
         self.upgradableFactoriesTable:reloadData()
         self:updatePCMFactoriesRates()
     end
@@ -262,10 +282,6 @@ function InGameMenuUpgradableFactories:updatePCMFactoriesRates()
     end
 end
 
-function InGameMenuUpgradableFactories:sell()
-    print("WIP")
-end
-
 function InGameMenuUpgradableFactories:saveToXML(xmlFile)
     self:lookForPCMFactories()
     
@@ -277,7 +293,7 @@ function InGameMenuUpgradableFactories:saveToXML(xmlFile)
         xmlFile:setString(key .. "#name", n.name)
         xmlFile:setInt(key .. "#level", n.level)
         xmlFile:setInt(key .. "#basePrice", n.basePrice)
-        xmlFile:setInt(key .. "#upgradePrice", n.upgradePrice)
+        -- xmlFile:setInt(key .. "#upgradePrice", n.upgradePrice)
         
         local j = 0
         local key2 = ""
@@ -319,7 +335,7 @@ function InGameMenuUpgradableFactories:loadFromXML()
         local name = getXMLString(xmlFile, key .. "#name")
         local level = getXMLInt(xmlFile, key .. "#level")
         local basePrice = getXMLInt(xmlFile, key .. "#basePrice")
-        local upgradePrice = getXMLInt(xmlFile, key .. "#upgradePrice")
+        -- local upgradePrice = getXMLInt(xmlFile, key .. "#upgradePrice")
         local productions = {}
         local baseCapacities = {}
 
@@ -361,7 +377,7 @@ function InGameMenuUpgradableFactories:loadFromXML()
             counter2 = counter2 +1
         end
 
-        if name and level and basePrice and upgradePrice then
+        if name and level and basePrice --[[and upgradePrice]] then
             table.insert(
                 self.factories,
                 {
@@ -369,7 +385,7 @@ function InGameMenuUpgradableFactories:loadFromXML()
                     name = name,
                     level = level,
                     basePrice = basePrice,
-                    upgradePrice = upgradePrice,
+                    -- upgradePrice = upgradePrice,
                     productions = productions,
                     baseCapacities = baseCapacities
                 }
@@ -384,20 +400,15 @@ end
 
 -- TODO
 -- add default values to xml loading to avoid bugs due to missing values (-> XMLUtil)
--- implement "sell" method
+-- create mod/menu icon
 -- remove the sections of the gui production table. the table is divided into a single section (titled "owned production") => useless usage of sections
--- (x) modify cycle cost, prod rate & storage capacity based on factory level & overwrite factory sell price
--- (x) rename "upgradable production" to "upgradable factory" (a factory hold 1 or more productions)
+-- Translation
 
 -- BUG
 -- Error when creating a new savegame (attempt to access the savegame directory that does not exist)
 -- first factory in the xml file is empty : <factory/>
 
 -- FEATURE
+-- add a "sell factory" button
 -- add a "rename factory" button
 -- add a "downgrade factory" button
-
---[[
-    prod_rate(level) = base_prod_rate * level * (1 + (0.1 * (level - 1)))
-    10% bonus prod rate / level (0% lvl 1, 10% level 2, 20% level 3...)
-]]
