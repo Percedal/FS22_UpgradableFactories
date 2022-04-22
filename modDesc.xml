@@ -11,6 +11,6 @@
 	<!-- <iconFilename>FieldLease.dds</iconFilename> -->
     <multiplayer supported="false"/>	
 	<extraSourceFiles>	
-		<sourceFile filename="UpgradableProductions.lua" /> 
+		<sourceFile filename="UpgradableFactories.lua" /> 
 	</extraSourceFiles>
 </modDesc>
