@@ -53,6 +53,11 @@ end
 function InGameMenuUpgradableFactories:onSavegameLoaded()
     self:lookForPCMFactories()
     self:updatePCMFactoriesRates()
+    for _,f in pairs(self.factories) do
+        for fillType,fillLevel in pairs(f.fillLevels) do
+            self:getPCMFactoryById(f.id).storage.fillLevels[fillType] = fillLevel
+        end
+    end
 end
 
 function InGameMenuUpgradableFactories:delete()
@@ -74,6 +79,7 @@ function InGameMenuUpgradableFactories:onFrameOpen()
     InGameMenuUpgradableFactories:superClass().onFrameOpen(self)
     self.upgradableFactoriesTable:reloadData()
     FocusManager:setFocus(self.upgradableFactoriesTable)
+    print_r(self:getPCMFactoryById(208).storage, 1)
 end
 
 function InGameMenuUpgradableFactories:onFrameClose()
@@ -88,7 +94,6 @@ function InGameMenuUpgradableFactories:lookForPCMFactories()
                 name = f:getName(),
                 level = 1,
                 basePrice = f.owningPlaceable:getPrice(),
-                -- upgradePrice = f.owningPlaceable:getPrice(),
                 productions = {},
                 baseCapacities = {}
             }
@@ -207,7 +212,7 @@ end
 function InGameMenuUpgradableFactories:onUpgradeConfirm(confirm)
     if confirm then
         local upgradePrice = self:adjUpgradePrice2lvl(self.selectedFactory.basePrice, self.selectedFactory.level)
-        g_currentMission:addMoney(-upgradePrice, 1--[[farmId]], MoneyType.SHOP_PROPERTY_BUY, true, true)
+        g_currentMission:addMoney(-upgradePrice, 1, MoneyType.SHOP_PROPERTY_BUY, true, true)
         self.selectedFactory.level = self.selectedFactory.level + 1
         self.upgradableFactoriesTable:reloadData()
         self:updatePCMFactoriesRates()
@@ -287,17 +292,16 @@ function InGameMenuUpgradableFactories:saveToXML(xmlFile)
     
     local key = ""
     
-    for i,n in ipairs(self.factories) do
+    for i,f in ipairs(self.factories) do
         key = string.format("upgradableFactories.factory(%d)", i)
-        xmlFile:setInt(key .. "#id", n.id)
-        xmlFile:setString(key .. "#name", n.name)
-        xmlFile:setInt(key .. "#level", n.level)
-        xmlFile:setInt(key .. "#basePrice", n.basePrice)
-        -- xmlFile:setInt(key .. "#upgradePrice", n.upgradePrice)
+        xmlFile:setInt(key .. "#id", f.id)
+        xmlFile:setString(key .. "#name", f.name)
+        xmlFile:setInt(key .. "#level", f.level)
+        xmlFile:setInt(key .. "#basePrice", f.basePrice)
         
         local j = 0
         local key2 = ""
-        for _,p in ipairs(n.productions) do
+        for _,p in ipairs(f.productions) do
             key2 = key .. string.format(".productions.production(%d)", j)
             xmlFile:setString(key2 .. "#name", p.name)
             xmlFile:setInt(key2 .. "#cyclesPerMonth", p.cyclesPerMonth)
@@ -305,12 +309,14 @@ function InGameMenuUpgradableFactories:saveToXML(xmlFile)
             j = j + 1
         end
 
+        local fls = self:getPCMFactoryById(f.id).storage.fillLevels
         j = 0
         key2 = ""
-        for k,v in pairs(n.baseCapacities) do
+        for k,v in pairs(f.baseCapacities) do
             key2 = key .. string.format(".capacities.baseCapacity(%d)", j)
             xmlFile:setInt(key2 .. "#fillType", k)
             xmlFile:setInt(key2 .. "#capacity", v)
+            xmlFile:setInt(key2 .. "#fillLevel", fls[k])
             j = j + 1
         end
     end
@@ -335,9 +341,9 @@ function InGameMenuUpgradableFactories:loadFromXML()
         local name = getXMLString(xmlFile, key .. "#name")
         local level = getXMLInt(xmlFile, key .. "#level")
         local basePrice = getXMLInt(xmlFile, key .. "#basePrice")
-        -- local upgradePrice = getXMLInt(xmlFile, key .. "#upgradePrice")
         local productions = {}
         local baseCapacities = {}
+        local fillLevels = {}
 
         local counter2 = 0
         while true do
@@ -361,23 +367,27 @@ function InGameMenuUpgradableFactories:loadFromXML()
 
             counter2 = counter2 +1
         end
-
+        
         counter2 = 0
         while true do
             local key2 = key .. string.format(".capacities.baseCapacity(%d)", counter2)
             
             local fillType = getXMLInt(xmlFile, key2 .. "#fillType")
             local capacity = getXMLInt(xmlFile, key2 .. "#capacity")
+            local fillLevel = getXMLInt(xmlFile, key2 .. "#fillLevel")
             if not fillType or not capacity then
                 break
             end
 
             table.insert(baseCapacities, fillType, capacity)
 
+            print(fillType .. " " .. fillLevel)
+            table.insert(fillLevels, fillType, fillLevel)
+
             counter2 = counter2 +1
         end
 
-        if name and level and basePrice --[[and upgradePrice]] then
+        if name and level and basePrice then
             table.insert(
                 self.factories,
                 {
@@ -385,15 +395,18 @@ function InGameMenuUpgradableFactories:loadFromXML()
                     name = name,
                     level = level,
                     basePrice = basePrice,
-                    -- upgradePrice = upgradePrice,
                     productions = productions,
-                    baseCapacities = baseCapacities
+                    baseCapacities = baseCapacities,
+                    fillLevels = fillLevels
                 }
             )
         end
         
         counter = counter +1
     end
+
+    print_r(self.factories)
+
 
     delete(xmlFile)
 end
