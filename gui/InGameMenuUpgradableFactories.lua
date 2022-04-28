@@ -29,18 +29,10 @@ function InGameMenuUpgradableFactories.new(i18n, messageCenter)
             self:upgrade()
         end
     }
-    -- self.btnSell = {
-    --     text = "Sell",
-    --     inputAction = InputAction.MENU_EXTRA_1,
-    --     callback = function ()
-    --         self:sell()
-    --     end
-    -- }
     
     self:setMenuButtonInfo({
         self.backButtonInfo,
-        self.btnUpgrade,
-        -- self.btnSell
+        self.btnUpgrade
     })
     
     return self
@@ -51,13 +43,28 @@ function InGameMenuUpgradableFactories:initialize()
 end
 
 function InGameMenuUpgradableFactories:onSavegameLoaded()
+    -- On load, update production points storage capacities based on their levels
+    -- This cannot be done when loading xml file : g_currentMission.productionChainManager does not exist at that moment
+    for _,f in pairs(self.factories) do
+        f.productionPointObject = self:getPCMFactoryById(f.id)
+        if not f.productionPointObject then
+            f.productionPointObject = self:getPCMFactoryByPosition(f.position)
+            if not f.productionPointObject then
+                printf("Error when searching factory %d by position", f.id)
+                break
+            end
+        end
+
+        for fillType,fillLevel in pairs(f.fillLevels) do
+            f.productionPointObject.storage.fillLevels[fillType] = fillLevel
+        end
+
+        f.id = nil
+        f.fillLevels = nil
+    end
+
     self:lookForPCMFactories()
     self:updatePCMFactoriesRates()
-    for _,f in pairs(self.factories) do
-        for fillType,fillLevel in pairs(f.fillLevels) do
-            self:getPCMFactoryById(f.id).storage.fillLevels[fillType] = fillLevel
-        end
-    end
 end
 
 function InGameMenuUpgradableFactories:delete()
@@ -79,7 +86,6 @@ function InGameMenuUpgradableFactories:onFrameOpen()
     InGameMenuUpgradableFactories:superClass().onFrameOpen(self)
     self.upgradableFactoriesTable:reloadData()
     FocusManager:setFocus(self.upgradableFactoriesTable)
-    print_r(self:getPCMFactoryById(208).storage, 1)
 end
 
 function InGameMenuUpgradableFactories:onFrameClose()
@@ -90,8 +96,7 @@ function InGameMenuUpgradableFactories:lookForPCMFactories()
     for _,f in ipairs(g_currentMission.productionChainManager.productionPoints) do
         if f.isOwned and not self:getFactoryById(f.id) then
             local tab = {
-                id = f.id,
-                name = f:getName(),
+                productionPointObject = f,
                 level = 1,
                 basePrice = f.owningPlaceable:getPrice(),
                 productions = {},
@@ -102,7 +107,7 @@ function InGameMenuUpgradableFactories:lookForPCMFactories()
                 table.insert(
                     tab.productions,
                     {
-                        name = p.name,
+                        id = p.id,
                         cyclesPerMonth = p.cyclesPerMonth,
                         costsPerActiveMonth = p.costsPerActiveMonth
                     }
@@ -122,18 +127,32 @@ function InGameMenuUpgradableFactories:lookForPCMFactories()
 end
 
 function InGameMenuUpgradableFactories:getFactoryById(id)
-    for _,n in ipairs(self.factories) do
-        if n.id == id then
-            return n
+    for _,f in ipairs(self.factories) do
+        if f.productionPointObject.id == id then
+            return f
         end
     end
     return nil
 end
 
 function InGameMenuUpgradableFactories:getPCMFactoryById(id)
-    for _,n in ipairs(g_currentMission.productionChainManager.productionPoints) do
-        if n.id == id then
-            return n
+    for _,f in ipairs(g_currentMission.productionChainManager.productionPoints) do
+        if f.id == id then
+            return f
+        end
+    end
+    return nil
+end
+
+local function approxEq(f1, f2)
+    return math.abs(f1 - f2) < 0.001
+end
+
+function InGameMenuUpgradableFactories:getPCMFactoryByPosition(position)
+    for _,f in ipairs(g_currentMission.productionChainManager.productionPoints) do
+        local position2 = f.owningPlaceable.position
+        if approxEq(position.x, position2.x) and approxEq(position.y, position2.y) and approxEq(position.z, position2.z) then
+            return f
         end
     end
     return nil
@@ -153,7 +172,7 @@ end
 
 function InGameMenuUpgradableFactories:populateCellForItemInSection(list, section, index, cell)
     local f = self.factories[index]
-    cell:getAttribute("factory"):setText(f.name)
+    cell:getAttribute("factory"):setText(f.productionPointObject.owningPlaceable:getName())
     cell:getAttribute("level"):setText(f.level)
     cell:getAttribute("value"):setText(g_i18n:formatMoney(f.basePrice * f.level))
     cell:getAttribute("cost"):setText(g_i18n:formatMoney(self:adjUpgradePrice2lvl(f.basePrice, f.level)))
@@ -163,39 +182,12 @@ function InGameMenuUpgradableFactories:onListSelectionChanged(list, section, ind
     self.selectedFactory = self.factories[index]
 end
 
--- function InGameMenuUpgradableFactories:sell()
---     local text = string.format(
---         "Sell %s for %s?",
---         self.selectedFactory.name,
---         g_i18n:formatMoney(self:adjSellPrice2lvl(self.selectedFactory.basePrice, self.selectedFactory.level))
---     )
---     g_gui:showYesNoDialog(
---         {
---             text = text,
---             title = "Sell Factory",
---             callback = self.onSellConfirm,
---             target = self
---         }
---     )
--- end
-
--- function InGameMenuUpgradableFactories:onSellConfirm(confirm)
---     if confirm then
---         local saveId = self:getPCMFactoryById(self.selectedFactory.id).owningPlaceable.currentSavegameId
---         print(saveId)
---         print(type(saveId))
---         local placeable = g_currentMission.placeableSystem.savegameIdToPlaceable[saveId]
---         g_currentMission.placeableSystem:removePlaceable(placeable)
-        
---     end
--- end
-
 function InGameMenuUpgradableFactories:upgrade()
     if g_currentMission.missionInfo.money >= self.selectedFactory.basePrice then
         local upgradePrice = self:adjUpgradePrice2lvl(self.selectedFactory.basePrice, self.selectedFactory.level)
         local text = string.format(
             "Upgrade %s for %s?",
-            self.selectedFactory.name,
+            self.selectedFactory.productionPointObject.owningPlaceable:getName(),
             g_i18n:formatMoney(upgradePrice)
         )
         g_gui:showYesNoDialog(
@@ -246,40 +238,39 @@ end
 
 function InGameMenuUpgradableFactories:updatePCMFactoriesRates()
     for _,f in ipairs(self.factories) do
-        local pcm = self:getPCMFactoryById(f.id)
-        for i,pcmp in ipairs(pcm.productions) do
-            local fp = f.productions[i]
+        local ppo = f.productionPointObject
+        for i,prods in ipairs(ppo.productions) do
+            local fprods = f.productions[i]
             
-            if not fp or pcmp.name ~= fp.name then
+            if not fprods or prods.id ~= fprods.id then
                 for j,n in ipairs(f.productions) do
-                    if n.name == pcmp.name then
-                        fp = f.productions[j]
+                    if n.id == prods.id then
+                        fprods = f.productions[j]
                     end
                 end
 
-                if not fp or pcmp.name ~= fp.name then
-                    print("Error while updating "..pcmp.name.." factory "..fp)
+                if not fprods or prods.id ~= fprods.id then
+                    printf("Error while updating %s factory [%s|%s|%s]", prods.id, type(fprods), prods.id, prods.id)
                     break
                 end
             end
 
-            pcmp.cyclesPerMonth = self:adjCycl2lvl(fp.cyclesPerMonth, f.level)
-            pcmp.cyclesPerHour = pcmp.cyclesPerMonth / 24
-            pcmp.cyclesPerMinute = pcmp.cyclesPerHour / 60
+            prods.cyclesPerMonth = self:adjCycl2lvl(fprods.cyclesPerMonth, f.level)
+            prods.cyclesPerHour = prods.cyclesPerMonth / 24
+            prods.cyclesPerMinute = prods.cyclesPerHour / 60
 
-            pcmp.costsPerActiveMonth = self:adjCost2lvl(fp.costsPerActiveMonth, f.level)
-            pcmp.costsPerActiveHour = pcmp.costsPerActiveMonth / 24
-            pcmp.costsPerActiveMinute = pcmp.costsPerActiveHour / 60
+            prods.costsPerActiveMonth = self:adjCost2lvl(fprods.costsPerActiveMonth, f.level)
+            prods.costsPerActiveHour = prods.costsPerActiveMonth / 24
+            prods.costsPerActiveMinute = prods.costsPerActiveHour / 60
         end
 
-        local pcmc = pcm.storage.capacities
-        for fillType,capacity in pairs(pcm.storage.capacities) do
+        local pcmc = ppo.storage.capacities
+        for fillType,capacity in pairs(ppo.storage.capacities) do
             pcmc[fillType] = self:adjCapa2lvl(capacity, f.level)
         end
 
-        -- pcm.owningPlaceable.price = f.basePrice * f.level
-        pcm.owningPlaceable.getSellPrice = Utils.overwrittenFunction(
-            pcm.owningPlaceable.getSellPrice,
+        ppo.owningPlaceable.getSellPrice = Utils.overwrittenFunction(
+            ppo.owningPlaceable.getSellPrice,
             function ()
                 return self:adjSellPrice2lvl(f.basePrice, f.level)
             end
@@ -291,33 +282,41 @@ function InGameMenuUpgradableFactories:saveToXML(xmlFile)
     self:lookForPCMFactories()
     
     local key = ""
-    
     for i,f in ipairs(self.factories) do
-        key = string.format("upgradableFactories.factory(%d)", i)
-        xmlFile:setInt(key .. "#id", f.id)
-        xmlFile:setString(key .. "#name", f.name)
-        xmlFile:setInt(key .. "#level", f.level)
-        xmlFile:setInt(key .. "#basePrice", f.basePrice)
-        
-        local j = 0
-        local key2 = ""
-        for _,p in ipairs(f.productions) do
-            key2 = key .. string.format(".productions.production(%d)", j)
-            xmlFile:setString(key2 .. "#name", p.name)
-            xmlFile:setInt(key2 .. "#cyclesPerMonth", p.cyclesPerMonth)
-            xmlFile:setInt(key2 .. "#costsPerActiveMonth", p.costsPerActiveMonth)
-            j = j + 1
-        end
+        if f.productionPointObject and f.productionPointObject.isOwned then
+            key = string.format("upgradableFactories.factory(%d)", i)
+            xmlFile:setInt(key .. "#id", f.productionPointObject.id)
+            xmlFile:setString(key .. "#name", f.productionPointObject.owningPlaceable:getName())
+            xmlFile:setInt(key .. "#level", f.level)
+            xmlFile:setInt(key .. "#basePrice", f.basePrice)
 
-        local fls = self:getPCMFactoryById(f.id).storage.fillLevels
-        j = 0
-        key2 = ""
-        for k,v in pairs(f.baseCapacities) do
-            key2 = key .. string.format(".capacities.baseCapacity(%d)", j)
-            xmlFile:setInt(key2 .. "#fillType", k)
-            xmlFile:setInt(key2 .. "#capacity", v)
-            xmlFile:setInt(key2 .. "#fillLevel", fls[k])
-            j = j + 1
+            local key2 = key..".position"
+            xmlFile:setFloat(key2 .. "#x", f.productionPointObject.owningPlaceable.position.x)
+            xmlFile:setFloat(key2 .. "#y", f.productionPointObject.owningPlaceable.position.y)
+            xmlFile:setFloat(key2 .. "#z", f.productionPointObject.owningPlaceable.position.z)
+            
+            local j = 0
+            key2 = ""
+            for _,p in ipairs(f.productions) do
+                key2 = key .. string.format(".productions.production(%d)", j)
+                xmlFile:setString(key2 .. "#id", p.id)
+                xmlFile:setInt(key2 .. "#cyclesPerMonth", p.cyclesPerMonth)
+                xmlFile:setInt(key2 .. "#costsPerActiveMonth", p.costsPerActiveMonth)
+                j = j + 1
+            end
+
+            local fls = f.productionPointObject.storage.fillLevels
+            j = 0
+            key2 = ""
+            for k,v in pairs(f.baseCapacities) do
+                key2 = key .. string.format(".capacities.baseCapacity(%d)", j)
+                xmlFile:setInt(key2 .. "#fillType", k)
+                xmlFile:setInt(key2 .. "#capacity", v)
+                xmlFile:setInt(key2 .. "#fillLevel", fls[k])
+                j = j + 1
+            end
+        else
+            f = nil
         end
     end
 end
@@ -338,9 +337,13 @@ function InGameMenuUpgradableFactories:loadFromXML()
             break
         end
 
-        local name = getXMLString(xmlFile, key .. "#name")
         local level = getXMLInt(xmlFile, key .. "#level")
         local basePrice = getXMLInt(xmlFile, key .. "#basePrice")
+        local position = {
+            x = getXMLFloat(xmlFile, key .. ".position#x"),
+            y = getXMLFloat(xmlFile, key .. ".position#y"),
+            z = getXMLFloat(xmlFile, key .. ".position#z")
+        }
         local productions = {}
         local baseCapacities = {}
         local fillLevels = {}
@@ -349,17 +352,17 @@ function InGameMenuUpgradableFactories:loadFromXML()
         while true do
             local key2 = key .. string.format(".productions.production(%d)", counter2)
             
-            local name = getXMLString(xmlFile, key2 .. "#name")
+            local pid = getXMLString(xmlFile, key2 .. "#id")
             local cypm = getXMLInt(xmlFile, key2 .. "#cyclesPerMonth")
             local copm = getXMLInt(xmlFile, key2 .. "#costsPerActiveMonth")
-            if not (name and cypm and copm) then
+            if not (pid and cypm and copm) then
                 break
             end
 
             table.insert(
                 productions,
                 {
-                    name = name,
+                    id = pid,
                     cyclesPerMonth = cypm,
                     costsPerActiveMonth = copm
                 }
@@ -375,38 +378,33 @@ function InGameMenuUpgradableFactories:loadFromXML()
             local fillType = getXMLInt(xmlFile, key2 .. "#fillType")
             local capacity = getXMLInt(xmlFile, key2 .. "#capacity")
             local fillLevel = getXMLInt(xmlFile, key2 .. "#fillLevel")
-            if not fillType or not capacity then
+            if not (fillType and capacity) then
                 break
             end
 
             table.insert(baseCapacities, fillType, capacity)
-
-            print(fillType .. " " .. fillLevel)
             table.insert(fillLevels, fillType, fillLevel)
 
             counter2 = counter2 +1
         end
 
-        if name and level and basePrice then
+        if level and basePrice then
             table.insert(
                 self.factories,
                 {
                     id = id,
-                    name = name,
                     level = level,
                     basePrice = basePrice,
                     productions = productions,
                     baseCapacities = baseCapacities,
-                    fillLevels = fillLevels
+                    fillLevels = fillLevels,
+                    position = position
                 }
             )
         end
         
         counter = counter +1
     end
-
-    print_r(self.factories)
-
 
     delete(xmlFile)
 end
