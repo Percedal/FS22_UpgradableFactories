@@ -7,6 +7,10 @@ source(UpgradableFactories.dir .. "gui/InGameMenuUpgradableFactories.lua")
 local upgradableFactories = nil
 
 function UpgradableFactories:loadMap()
+	if g_currentMission.missionInfo.savegameDirectory then
+		UpgradableFactories.xmlFilename = g_currentMission.missionInfo.savegameDirectory .. "/upgradableFactories.xml"
+	end
+
 	upgradableFactories = InGameMenuUpgradableFactories.new(g_i18n)
     
 	g_gui:loadProfiles(UpgradableFactories.dir .. "gui/guiProfiles.xml")
