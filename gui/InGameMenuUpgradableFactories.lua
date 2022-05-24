@@ -84,6 +84,7 @@ end
 
 function InGameMenuUpgradableFactories:onFrameOpen()
     InGameMenuUpgradableFactories:superClass().onFrameOpen(self)
+    self:lookForPCMFactories()
     self.upgradableFactoriesTable:reloadData()
     FocusManager:setFocus(self.upgradableFactoriesTable)
 end
@@ -213,27 +214,27 @@ end
 
 function InGameMenuUpgradableFactories:adjUpgradePrice2lvl(price, lvl)
     -- Upgrade price increase by 7.5% each level
-    return price * (1 + (0.075 * (lvl - 1)))
+    return math.floor(price * (1 + (0.075 * lvl)))
 end
 
 function InGameMenuUpgradableFactories:adjCapa2lvl(capacity, lvl)
     -- Strorage capacity increase by 2.5 times the base capacity each level
-    return capacity + capacity * 2.5 * (lvl - 1)
+    return math.floor(capacity + capacity * 2.5 * (lvl - 1))
 end
 
 function InGameMenuUpgradableFactories:adjCycl2lvl(cycle, lvl)
     -- Production speed gets multiplied by the level and 5% faster each time
-    return cycle * lvl * (1 + (0.05 * (lvl - 1)))
+    return math.floor(cycle * lvl * (1 + (0.05 * (lvl - 1))))
 end
 
 function InGameMenuUpgradableFactories:adjCost2lvl(cost, lvl)
-    -- Running cost gets multiplied by the level and is slightly cheaper each time by 5%
-    return cost + cost * 0.95 * (lvl - 1)
+    -- Running cost gets multiplied by the level but is slightly cheaper each time by 5%
+    return math.floor(cost + cost * 0.95 * (lvl - 1))
 end
 
 function InGameMenuUpgradableFactories:adjSellPrice2lvl(price, lvl)
     -- Sell price is 75% of facotry's value (base is 50%)
-    return price * lvl * 0.75
+    return math.floor(price * lvl * 0.75)
 end
 
 function InGameMenuUpgradableFactories:updatePCMFactoriesRates()
@@ -322,11 +323,11 @@ function InGameMenuUpgradableFactories:saveToXML(xmlFile)
 end
 
 function InGameMenuUpgradableFactories:loadFromXML()
-    local xmlFile = loadXMLFile("UpgradableFactoriesXML", UpgradableFactories.xmlFilename)
-
-    if xmlFile == 0 then
+    if not UpgradableFactories.xmlFilename then
         return
     end
+
+    local xmlFile = loadXMLFile("UpgradableFactoriesXML", UpgradableFactories.xmlFilename)
 
     local counter = 1
     while true do
@@ -416,7 +417,6 @@ end
 -- Translation
 
 -- BUG
--- Error when creating a new savegame (attempt to access the savegame directory that does not exist)
 -- first factory in the xml file is empty : <factory/>
 
 -- FEATURE

@@ -7,9 +7,7 @@ source(UpgradableFactories.dir .. "gui/InGameMenuUpgradableFactories.lua")
 local upgradableFactories = nil
 
 function UpgradableFactories:loadMap()
-	UpgradableFactories.xmlFilename = g_currentMission.missionInfo.savegameDirectory .. "/upgradableFactories.xml"
-
-	upgradableFactories = InGameMenuUpgradableFactories.new(g_i18n) 
+	upgradableFactories = InGameMenuUpgradableFactories.new(g_i18n)
     
 	g_gui:loadProfiles(UpgradableFactories.dir .. "gui/guiProfiles.xml")
 	g_gui:loadGui(UpgradableFactories.dir .. "gui/InGameMenuUpgradableFactories.xml", "InGameMenuUpgradableFactories", upgradableFactories, true)
@@ -91,6 +89,9 @@ function UpgradableFactories.fixInGameMenu(frame,pageName,uvs,position,predicate
 end
 
 function UpgradableFactories:saveToXML(xmlFilename)
+	if not UpgradableFactories.xmlFilename then
+		UpgradableFactories.xmlFilename = g_currentMission.missionInfo.savegameDirectory .. "/upgradableFactories.xml"
+	end
 	local xmlFile = XMLFile.create("UpgradableFactoriesXML", UpgradableFactories.xmlFilename, "upgradableFactories")
 
     upgradableFactories:saveToXML(xmlFile)
