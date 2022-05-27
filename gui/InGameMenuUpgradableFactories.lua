@@ -71,7 +71,7 @@ end
 
 function InGameMenuUpgradableFactories:overwriteFactoryName(factory)
     local name = factory.productionPointObject.owningPlaceable:getName()
-    name = string.gsub(name, "lvl.%d+", "")
+    name = string.gsub(name, "%s*lvl.%d+", "")
     factory.productionPointObject.owningPlaceable.getName = Utils.overwrittenFunction(
         factory.productionPointObject.owningPlaceable.getName,
         function ()
@@ -228,12 +228,14 @@ end
 -- end
 
 function InGameMenuUpgradableFactories:onListSelectionChanged(list, section, index)
+    print(list.selectedProductionPoint.owningPlaceable:getName())
     self.selectedFactory = self:getFactoryByPosition(list.selectedProductionPoint.owningPlaceable.position)
 end
 
 function InGameMenuUpgradableFactories:upgrade()
-    if g_currentMission.missionInfo.money >= self.selectedFactory.basePrice then
-        local upgradePrice = self:adjUpgradePrice2lvl(self.selectedFactory.basePrice, self.selectedFactory.level)
+    local upgradePrice = self:adjUpgradePrice2lvl(self.selectedFactory.basePrice, self.selectedFactory.level)
+    print(self.selectedFactory.basePrice, self.selectedFactory.level, upgradePrice)
+    if g_currentMission.missionInfo.money >= upgradePrice then
         local text = string.format(
             "Upgrade %s to level %d for %s?",
             self.selectedFactory.productionPointObject.owningPlaceable:getName(),
@@ -248,6 +250,8 @@ function InGameMenuUpgradableFactories:upgrade()
                 target = self
             }
         )
+    else
+        print("not enough money")
     end
 end
 
@@ -258,13 +262,12 @@ function InGameMenuUpgradableFactories:onUpgradeConfirm(confirm)
         self.selectedFactory.level = self.selectedFactory.level + 1
         self:overwriteFactoryName(self.selectedFactory)
         self:updatePCMFactoriesRates()
-        -- print_r(g_currentMission.inGameMenu.pageProduction.storageList, 0)
     end
 end
 
 function InGameMenuUpgradableFactories:adjUpgradePrice2lvl(price, lvl)
-    -- Upgrade price increase by 7.5% each level
-    return math.floor(price * (1 + (0.075 * lvl)))
+    -- Upgrade price increase by 5% each level
+    return math.floor(price * (1 + (0.05 * lvl)))
 end
 
 function InGameMenuUpgradableFactories:adjCapa2lvl(capacity, lvl)
@@ -273,13 +276,17 @@ function InGameMenuUpgradableFactories:adjCapa2lvl(capacity, lvl)
 end
 
 function InGameMenuUpgradableFactories:adjCycl2lvl(cycle, lvl)
-    -- Production speed gets multiplied by the level and 5% faster each time
-    return math.floor(cycle * lvl * (1 + (0.05 * (lvl - 1))))
+    -- Production speed gets multiplied by the level and level 2 a bonus is applied. Starting at 15% it grows with the level too
+    local bonusFactor = 1
+    if lvl > 1 then
+        bonusFactor = 1.15 + 0.05 * (lvl - 2)
+    end
+    return math.floor(cycle * lvl * bonusFactor)
 end
 
 function InGameMenuUpgradableFactories:adjCost2lvl(cost, lvl)
-    -- Running cost gets multiplied by the level but is slightly cheaper each time by 5%
-    return math.floor(cost + cost * 0.95 * (lvl - 1))
+    -- Running cost gets multiplied by the level but you get a reduction of 10% each level
+    return math.floor(cost + cost * 0.9 * (lvl - 1))
 end
 
 function InGameMenuUpgradableFactories:adjSellPrice2lvl(price, lvl)
@@ -337,7 +344,7 @@ function InGameMenuUpgradableFactories:saveToXML(xmlFile)
         if f.productionPointObject and f.productionPointObject.isOwned then
             key = string.format("upgradableFactories.factory(%d)", i)
             xmlFile:setInt(key .. "#id", f.productionPointObject.id)
-            xmlFile:setString(key .. "#name", string.gsub(f.productionPointObject.owningPlaceable:getName(), "lvl.%d+", ""))
+            xmlFile:setString(key .. "#name", string.gsub(f.productionPointObject.owningPlaceable:getName(), "%s*lvl.%d+", ""))
             xmlFile:setInt(key .. "#level", f.level)
             xmlFile:setInt(key .. "#basePrice", f.basePrice)
 
