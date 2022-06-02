@@ -13,4 +13,15 @@
 	<extraSourceFiles>	
 		<sourceFile filename="UpgradableFactories.lua" /> 
 	</extraSourceFiles>
+
+	<l10n>
+        <text name="UpgradableFactories_UPGRADE">
+            <en>Upgrade</en>
+            <fr>Améliorer</fr>
+        </text>
+		<text name="UpgradableFactories_UPGRADE_TEXT">
+            <en>Upgrade %s to level %d for %s?</en>
+            <fr>Améliorer %s au niveau %d pour %s ?</fr>
+        </text>
+    </l10n>
 </modDesc>

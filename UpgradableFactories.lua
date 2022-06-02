@@ -11,7 +11,7 @@ function UpgradableFactories:loadMap()
 		UpgradableFactories.xmlFilename = g_currentMission.missionInfo.savegameDirectory .. "/upgradableFactories.xml"
 	end
 
-	upgradableFactories = InGameMenuUpgradableFactories.new(g_i18n)
+	upgradableFactories = InGameMenuUpgradableFactories.new()
     
 	-- g_gui:loadProfiles(UpgradableFactories.dir .. "gui/guiProfiles.xml")
 	-- g_gui:loadGui(UpgradableFactories.dir .. "gui/InGameMenuUpgradableFactories.xml", "InGameMenuUpgradableFactories", upgradableFactories, true)

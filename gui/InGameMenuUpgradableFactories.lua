@@ -1,40 +1,12 @@
 InGameMenuUpgradableFactories = {}
 InGameMenuUpgradableFactories._mt = Class(InGameMenuUpgradableFactories, TabbedMenuFrameElement)
 
--- InGameMenuUpgradableFactories.CONTROLS = {
---     MAIN_BOX = "mainBox",
---     TABLE_SLIDER = "tableSlider",
---     HEADER_BOX = "tableHeaderBox",
---     TABLE = "upgradableFactoriesTable",
---     TABLE_TEMPLATE = "upgradableFactoriesRowTemplate",
--- }
-
-function InGameMenuUpgradableFactories.new(i18n, messageCenter)
+function InGameMenuUpgradableFactories.new()
     local self = InGameMenuUpgradableFactories:superClass().new(nil, InGameMenuUpgradableFactories._mt)
     
     self.name = "inGameMenuUpgradableFactories"
-    self.i18n = i18n
-    self.messageCenter = messageCenter
     self.factories = {}
-    
-    -- self:registerControls(InGameMenuUpgradableFactories.CONTROLS)
-    
-    -- self.backButtonInfo = {
-    --     inputAction = InputAction.MENU_BACK
-    -- }
-    -- self.btnUpgrade = {
-    --     text = "Upgrade",
-    --     inputAction = InputAction.MENU_ACTIVATE,
-    --     callback = function ()
-    --         self:upgrade()
-    --     end
-    -- }
-    
-    -- self:setMenuButtonInfo({
-    --     self.backButtonInfo,
-    --     self.btnUpgrade
-    -- })
-    
+
     return self
 end
 
@@ -70,47 +42,32 @@ function InGameMenuUpgradableFactories:onSavegameLoaded()
 end
 
 function InGameMenuUpgradableFactories:overwriteFactoryName(factory)
-    local name = factory.productionPointObject.owningPlaceable:getName()
-    name = string.gsub(name, "%s*lvl.%d+", "")
+    local name = self:getDefaultFactoryName(factory)
     factory.productionPointObject.owningPlaceable.getName = Utils.overwrittenFunction(
         factory.productionPointObject.owningPlaceable.getName,
         function ()
-            return name .. " lvl." .. tostring(factory.level)
+            return name .. " - " .. tostring(factory.level)
         end
     )
+end
+
+function InGameMenuUpgradableFactories:getDefaultFactoryName(factory)
+    local name = factory.productionPointObject.owningPlaceable:getName()
+    name = string.gsub(name, "%s*-%s%d+", "")
+    return name
 end
 
 function InGameMenuUpgradableFactories:delete()
     InGameMenuUpgradableFactories:superClass().delete(self)
 end
 
--- function InGameMenuUpgradableFactories:copyAttributes(src)
---     InGameMenuUpgradableFactories:superClass().copyAttributes(self, src)
---     self.i18n = src.i18n
--- end
-
--- function InGameMenuUpgradableFactories:onGuiSetupFinished()
---     InGameMenuUpgradableFactories:superClass().onGuiSetupFinished(self)
---     self.upgradableFactoriesTable:setDataSource(self)
---     self.upgradableFactoriesTable:setDelegate(self)
--- end
-
 function InGameMenuUpgradableFactories:onFrameOpen()
-    -- print("InGameMenuProductionFrame")
-    -- print_r(InGameMenuProductionFrame, 0)
-    -- print("pageProduction")
-    -- print_r(g_currentMission.inGameMenu.pageProduction, 0)
-    -- print("pageProduction.productionList")
-    -- print_r(g_currentMission.inGameMenu.pageProduction.productionList, 0)
-    -- print("pageProduction.productionList.sections")
-    -- print_r(g_currentMission.inGameMenu.pageProduction.productionList.sections, 2)
-
     self:lookForPCMFactories()
 
     local inGameMenu = g_currentMission.inGameMenu
     if inGameMenu.upgradeFactoryButton == nil then
         local upgradeBtn = inGameMenu.menuButton[1]:clone(self)
-        upgradeBtn:setText("Upgrade")
+        upgradeBtn:setText(g_i18n:getText("UpgradableFactories_UPGRADE"))
         upgradeBtn:setInputAction("MENU_EXTRA_1")
         upgradeBtn.onClickCallback = function ()
             self:upgrade()
@@ -118,6 +75,12 @@ function InGameMenuUpgradableFactories:onFrameOpen()
 
         inGameMenu.menuButton[1].parent:addElement(upgradeBtn)
         inGameMenu.upgradeFactoryButton = upgradeBtn
+
+        -- if g_currentMission.paused then
+        --     upgradeBtn.disabled = true
+        --     upgradeBtn.ignoreDisabled = false
+        --     print_r(upgradeBtn, 0)
+        -- end
     end
 end
 
@@ -207,38 +170,16 @@ function InGameMenuUpgradableFactories:getFactoryByPosition(position)
     return nil
 end
 
--- function InGameMenuUpgradableFactories:getNumberOfSections()
---     return 1
--- end
-
--- function InGameMenuUpgradableFactories:getNumberOfItemsInSection(list, section)
---     return #self.factories
--- end
-
--- function InGameMenuUpgradableFactories:getTitleForSectionHeader(list, section)
---     return "owned productions"
--- end
-
--- function InGameMenuUpgradableFactories:populateCellForItemInSection(list, section, index, cell)
---     local f = self.factories[index]
---     cell:getAttribute("factory"):setText(f.productionPointObject.owningPlaceable:getName())
---     cell:getAttribute("level"):setText(f.level)
---     cell:getAttribute("value"):setText(g_i18n:formatMoney(f.basePrice * f.level))
---     cell:getAttribute("cost"):setText(g_i18n:formatMoney(self:adjUpgradePrice2lvl(f.basePrice, f.level)))
--- end
-
 function InGameMenuUpgradableFactories:onListSelectionChanged(list, section, index)
-    print(list.selectedProductionPoint.owningPlaceable:getName())
     self.selectedFactory = self:getFactoryByPosition(list.selectedProductionPoint.owningPlaceable.position)
 end
 
 function InGameMenuUpgradableFactories:upgrade()
     local upgradePrice = self:adjUpgradePrice2lvl(self.selectedFactory.basePrice, self.selectedFactory.level)
-    print(self.selectedFactory.basePrice, self.selectedFactory.level, upgradePrice)
     if g_currentMission.missionInfo.money >= upgradePrice then
         local text = string.format(
-            "Upgrade %s to level %d for %s?",
-            self.selectedFactory.productionPointObject.owningPlaceable:getName(),
+            g_i18n:getText("UpgradableFactories_UPGRADE_TEXT"),
+            self:getDefaultFactoryName(self.selectedFactory),
             self.selectedFactory.level+1,
             g_i18n:formatMoney(upgradePrice)
         )
@@ -250,8 +191,6 @@ function InGameMenuUpgradableFactories:upgrade()
                 target = self
             }
         )
-    else
-        print("not enough money")
     end
 end
 
@@ -344,7 +283,7 @@ function InGameMenuUpgradableFactories:saveToXML(xmlFile)
         if f.productionPointObject and f.productionPointObject.isOwned then
             key = string.format("upgradableFactories.factory(%d)", i)
             xmlFile:setInt(key .. "#id", f.productionPointObject.id)
-            xmlFile:setString(key .. "#name", string.gsub(f.productionPointObject.owningPlaceable:getName(), "%s*lvl.%d+", ""))
+            xmlFile:setString(key .. "#name", self:getDefaultFactoryName(f))
             xmlFile:setInt(key .. "#level", f.level)
             xmlFile:setInt(key .. "#basePrice", f.basePrice)
 
@@ -468,15 +407,8 @@ function InGameMenuUpgradableFactories:loadFromXML()
 end
 
 -- TODO
--- add default values to xml loading to avoid bugs due to missing values (-> XMLUtil)
 -- create mod/menu icon
--- remove the sections of the gui production table. the table is divided into a single section (titled "owned production") => useless usage of sections
--- Translation
+-- desactivate button game paused
 
 -- BUG
 -- first factory in the xml file is empty : <factory/>
-
--- FEATURE
--- add a "sell factory" button
--- add a "rename factory" button
--- add a "downgrade factory" button
