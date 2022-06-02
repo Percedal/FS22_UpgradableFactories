@@ -407,8 +407,4 @@ function InGameMenuUpgradableFactories:loadFromXML()
 end
 
 -- TODO
--- create mod/menu icon
--- desactivate button game paused
-
--- BUG
--- first factory in the xml file is empty : <factory/>
+-- desactivate upgrade button when is game paused
