@@ -12,7 +12,6 @@ function UpgradableFactories:loadMap()
 	else
 		self.newSavegame = true
 	end
-	print("mod directory: " .. self.dir)
 	self.productionPoints = {}
 	self.upgradableFactories = InGameMenuUpgradableFactories.new(self)
 	self.upgradableFactories:initialize()
@@ -59,16 +58,22 @@ local function adjCycl2lvl(cycle, lvl)
 	lvl = tonumber(lvl)
 	local adj = cycle * lvl + cycle * 0.15 * (lvl - 1)
 	if adj < 1 then
-		return adf
+		return adj
 	else
-		return math.floor(cycle * lvl + cycle * 0.15 * (lvl - 1))
+		return math.floor(adj)
 	end
 end
 
 local function adjCost2lvl(cost, lvl)
     -- Running cost increase by it's base value each level
 	-- A reduction of 10% of the base cost is applied par level starting at the level 2
-    return math.floor(cost * lvl - cost * 0.1 * (lvl - 1))
+	lvl = tonumber(lvl)
+	local adj = cost * lvl - cost * 0.1 * (lvl - 1)
+	if adj < 1 then
+		return adj
+	else
+		return math.floor(adj)
+	end
 end
 
 local function adjPrice2lvl(price, lvl)
@@ -81,9 +86,9 @@ local function adjPrice2lvl(price, lvl)
     return price + upgradeValue
 end
 
-local function adjProdPoint2lvl(productionPoint, lvl)
+function UpgradableFactories:adjProdPoint2lvl(prodpoint, lvl)
 	if lvl > 1 then
-		for _,p in ipairs(productionPoint.productions) do
+		for _,p in ipairs(prodpoint.productions) do
 			p.cyclesPerMinute = adjCycl2lvl(p.cyclesPerMinute, lvl)
 			p.cyclesPerHour = adjCycl2lvl(p.cyclesPerHour, lvl)
 			p.cyclesPerMonth = adjCycl2lvl(p.cyclesPerMonth, lvl)
@@ -93,33 +98,33 @@ local function adjProdPoint2lvl(productionPoint, lvl)
 			p.costsPerActiveMonth = adjCost2lvl(p.costsPerActiveMonth, lvl)
 		end
 		
-		for ft,s in pairs(productionPoint.storage.capacities) do
-			productionPoint.storage.capacities[ft] = adjCapa2lvl(s, lvl)
+		for ft,s in pairs(prodpoint.storage.capacities) do
+			prodpoint.storage.capacities[ft] = adjCapa2lvl(s, lvl)
 		end
 
-		productionPoint.owningPlaceable.price = adjPrice2lvl(productionPoint.owningPlaceable.basePrice, lvl)
-		productionPoint.owningPlaceable["upgradePrice"] = adjUpgradePrice2lvl(productionPoint.owningPlaceable.basePrice, lvl)
+		prodpoint.owningPlaceable.price = adjPrice2lvl(prodpoint.owningPlaceable.basePrice, lvl)
+		prodpoint.owningPlaceable["upgradePrice"] = adjUpgradePrice2lvl(prodpoint.owningPlaceable.basePrice, lvl)
 		
 	end
 
-	productionPoint.owningPlaceable.getSellPrice = function ()
+	prodpoint.owningPlaceable.getSellPrice = function ()
 		local priceMultiplier = 0.75
-		local maxAge = productionPoint.owningPlaceable.storeItem.lifetime
+		local maxAge = prodpoint.owningPlaceable.storeItem.lifetime
 		if maxAge ~= nil and maxAge ~= 0 then
-			priceMultiplier = priceMultiplier * math.exp(-3.5 * math.min(productionPoint.owningPlaceable.age / maxAge, 1))
+			priceMultiplier = priceMultiplier * math.exp(-3.5 * math.min(prodpoint.owningPlaceable.age / maxAge, 1))
 		end
-		return math.floor(productionPoint.owningPlaceable.price * math.max(priceMultiplier, 0.05))
+		return math.floor(prodpoint.owningPlaceable.price * math.max(priceMultiplier, 0.05))
 	end
 end
 
 function UpgradableFactories:initProductions()
-	print("UpgradableFactories - Production points initialisation")
+	-- print("UpgradableFactories - Production points initialisation")
 	if self.newSavegame or #g_currentMission.productionChainManager.farmIds < 1 then return end
 
 	self.productionPoints = g_currentMission.productionChainManager.farmIds[1].productionPoints
 
 	if self.modFirstLoad then
-		print("UpgradableFactories - Initialisation of mod first load")
+		-- print("UpgradableFactories - Initialisation of mod first load")
 		for _,prod in ipairs(self.productionPoints) do
 			prod["productionLevel"] = 1
 			prod.owningPlaceable["basePrice"] = prod.owningPlaceable.price
@@ -128,11 +133,11 @@ function UpgradableFactories:initProductions()
 	end
 
 	if #self.loadedProductions < 1 then
-		print("UpgradableFactories - No production to initialize")
+		-- print("UpgradableFactories - No production to initialize")
 		return
 	end
 
-	printf("UpgradableFactories - %d production to initialize", #self.loadedProductions)
+	-- printf("UpgradableFactories - %d production to initialize", #self.loadedProductions)
 	for _,prod in ipairs(self.loadedProductions) do
 		local prodpoint = getProductionPointFromPosition(prod.position)
 		prodpoint["productionLevel"] = prod.level
@@ -140,14 +145,14 @@ function UpgradableFactories:initProductions()
 		prodpoint.owningPlaceable["basePrice"] = prod.basePrice
 
 		if prodpoint then
-			adjProdPoint2lvl(prodpoint, prod.level)
+			self:adjProdPoint2lvl(prodpoint, prod.level)
 		end
 	end
-	print("UpgradableFactories - Succesfully initialized productions")
+	-- print("UpgradableFactories - Succesfully initialized productions")
 end
 
 function UpgradableFactories:saveToXML()
-	print("UpgradableFactories - Saving to XML file")
+	-- print("UpgradableFactories - Saving to XML file")
 	-- on a new save, create xmlFile path
 	if g_currentMission.missionInfo.savegameDirectory then
 		self.xmlFilename = g_currentMission.missionInfo.savegameDirectory .. "/upgradableFactories.xml"
@@ -180,16 +185,16 @@ function UpgradableFactories:loadXML()
 	-- append when creating new save.
 	if self.newSavegame then return end
 
-	print("UpgradableFactories - Loading XML file")
+	-- print("UpgradableFactories - Loading XML file")
 
     local xmlFile = XMLFile.loadIfExists("UpgradableFactoriesXML", self.xmlFilename)
     if not xmlFile then
         self.modFirstLoad = true
-		print("UpgradableFactories - No XML file found, mod first load")
+		-- print("UpgradableFactories - No XML file found, mod first load")
 		return
     end
 
-	print("UpgradableFactories - XML file found")
+	-- print("UpgradableFactories - XML file found")
 
 	self.loadedProductions = {}
     local counter = 0
@@ -213,7 +218,7 @@ function UpgradableFactories:loadXML()
         counter = counter +1
     end
 
-	printf("UpgradableFactories - %d Factory found in the XML file", #self.loadedProductions)
+	-- printf("UpgradableFactories - %d Factory found in the XML file", #self.loadedProductions)
 end
 
 FSCareerMissionInfo.saveToXMLFile = Utils.appendedFunction(FSCareerMissionInfo.saveToXMLFile, UpgradableFactories.saveToXML)
