@@ -1,6 +1,8 @@
 InGameMenuUpgradableFactories = {}
 local inGameMenuUpgradableFactories_mt = Class(InGameMenuUpgradableFactories)
 
+InGameMenuProductionFrame.UPDATE_INTERVAL = 1000
+
 function InGameMenuUpgradableFactories.new(upgradableFactory)
     local self = setmetatable({}, inGameMenuUpgradableFactories_mt)
     
@@ -19,13 +21,6 @@ function InGameMenuUpgradableFactories:delete()
     InGameMenuUpgradableFactories:superClass().delete(self)
 end
 
-function InGameMenuUpgradableFactories:editSectionHeader()
-    for i,prod in ipairs(g_currentMission.productionChainManager.farmIds[1].productionPoints) do
-        local textElement = g_currentMission.inGameMenu.pageProduction.productionListBox.elements[1].sections[i].cells[0].elements[1]
-        textElement.text = tostring(prod.productionLevel) .. " - " .. prod.owningPlaceable:getName()
-    end
-end
-
 function InGameMenuUpgradableFactories:getProductionPoints()
     return g_currentMission.inGameMenu.pageProduction:getProductionPoints()
 end
@@ -37,11 +32,15 @@ function InGameMenuUpgradableFactories:onFrameClose()
         inGameMenu.upgradeFactoryButton:delete()
         inGameMenu.upgradeFactoryButton = nil
     end
+
+    for _,prod in ipairs(self:getProductionPoints()) do
+        prod.owningPlaceable:setName(string.gsub(prod.owningPlaceable:getName(), "%d+ %- ", ""))
+    end
 end
 
 function InGameMenuUpgradableFactories:onButtonUpgrade()
     local pageProduction = g_currentMission.inGameMenu.pageProduction
-    production, prodpoint = pageProduction:getSelectedProduction()
+    _, prodpoint = pageProduction:getSelectedProduction()
 
     if g_currentMission.missionInfo.money >= prodpoint.owningPlaceable.upgradePrice then
         local text = string.format(
@@ -63,17 +62,21 @@ end
 function InGameMenuUpgradableFactories:onFrameOpen()
     local inGameMenu = g_currentMission.inGameMenu
         if #self:getProductionPoints() > 0 and inGameMenu.upgradeFactoryButton == nil then
-        local menuButton = inGameMenu.menuButton[1]
-        local upgradeBtn = menuButton:clone(menuButton.parent)
-        upgradeBtn:setText(g_i18n:getText("uf_upgrade"))
-        upgradeBtn:setInputAction("MENU_EXTRA_1")
-        upgradeBtn.onClickCallback = InGameMenuUpgradableFactories.onButtonUpgrade
-        menuButton.parent.addElement(menuButton.parent, upgradeBtn)
-        inGameMenu.upgradeFactoryButton = upgradeBtn
-        InGameMenuUpgradableFactories:editSectionHeader()
-        local pageProduction = g_currentMission.inGameMenu.pageProduction
-        pageProduction.productionList.reloadData = Utils.appendedFunction(pageProduction.productionList.reloadData, InGameMenuUpgradableFactories.editSectionHeader)
-    end
+            local menuButton = inGameMenu.menuButton[1]
+            local upgradeBtn = menuButton:clone(menuButton.parent)
+            
+            upgradeBtn:setText(g_i18n:getText("uf_upgrade"))
+            upgradeBtn:setInputAction("MENU_EXTRA_1")
+            upgradeBtn.onClickCallback = InGameMenuUpgradableFactories.onButtonUpgrade
+            menuButton.parent.addElement(menuButton.parent, upgradeBtn)
+            inGameMenu.upgradeFactoryButton = upgradeBtn
+
+            for _,prod in ipairs(self:getProductionPoints()) do
+                prod.owningPlaceable:setName(tostring(prod.productionLevel) .. " - " .. prod.owningPlaceable:getName())
+            end
+            
+            g_currentMission.inGameMenu.pageProduction.productionList:reloadData()
+        end
 
     if g_currentMission.paused and inGameMenu.upgradeFactoryButton ~= nil then
         inGameMenu.upgradeFactoryButton.disabled = true
