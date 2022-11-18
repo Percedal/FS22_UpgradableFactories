@@ -26,11 +26,11 @@ More info <a href="https://github.com/Percedal/FS22_UpgradableFactories">here</a
 	</extraSourceFiles>
 
 	<l10n>
-        <text name="UpgradableFactories_UPGRADE">
+        <text name="uf_upgrade">
             <en>Upgrade</en>
             <fr>Améliorer</fr>
         </text>
-		<text name="UpgradableFactories_UPGRADE_TEXT">
+		<text name="uf_upgrade_dialog">
             <en>Upgrade %s to level %d for %s?</en>
             <fr>Améliorer %s au niveau %d pour %s ?</fr>
         </text>
