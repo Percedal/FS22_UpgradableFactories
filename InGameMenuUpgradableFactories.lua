@@ -34,7 +34,7 @@ function InGameMenuUpgradableFactories:onFrameClose()
     end
 
     for _,prod in ipairs(self:getProductionPoints()) do
-        prod.owningPlaceable:setName(string.gsub(prod.owningPlaceable:getName(), "%d+ %- ", ""))
+        prod.owningPlaceable.getName = function (_self) return _self.baseName end
     end
 end
 
@@ -45,7 +45,7 @@ function InGameMenuUpgradableFactories:onButtonUpgrade()
     if g_currentMission.missionInfo.money >= prodpoint.owningPlaceable.upgradePrice then
         local text = string.format(
             g_i18n:getText("uf_upgrade_dialog"),
-            prodpoint.owningPlaceable:getName(),
+            prodpoint.owningPlaceable.baseName,
             prodpoint.productionLevel+1,
             g_i18n:formatMoney(prodpoint.owningPlaceable.upgradePrice)
         )
@@ -57,6 +57,10 @@ function InGameMenuUpgradableFactories:onButtonUpgrade()
             args=prodpoint
         })
     end
+end
+
+local function prodPointUFName(basename, level)
+    return tostring(level) .. " - " .. basename
 end
 
 function InGameMenuUpgradableFactories:onFrameOpen()
@@ -72,22 +76,27 @@ function InGameMenuUpgradableFactories:onFrameOpen()
             inGameMenu.upgradeFactoryButton = upgradeBtn
 
             for _,prod in ipairs(self:getProductionPoints()) do
-                prod.owningPlaceable:setName(tostring(prod.productionLevel) .. " - " .. prod.owningPlaceable:getName())
+                prod.owningPlaceable.ufname = prodPointUFName(prod.owningPlaceable.baseName, prod.productionLevel)
+                prod.owningPlaceable.getName = function (_self) return _self.ufname end
             end
             
             g_currentMission.inGameMenu.pageProduction.productionList:reloadData()
         end
 
     if g_currentMission.paused and inGameMenu.upgradeFactoryButton ~= nil then
-        inGameMenu.upgradeFactoryButton.disabled = true
+        inGameMenu.upgradeFactoryButton:setDisabled(true)
+        inGameMenu:setMenuButtonInfoDirty()
     end
 end
 
 function InGameMenuUpgradableFactories:onUpgradeConfirm(confirm, prodpoint)
     if confirm then
         g_currentMission:addMoney(-prodpoint.owningPlaceable.upgradePrice, 1, MoneyType.SHOP_PROPERTY_BUY, true, true)
+        
         prodpoint.productionLevel = prodpoint.productionLevel + 1
         UpgradableFactories:adjProdPoint2lvl(prodpoint, prodpoint.productionLevel)
+        
+        prodpoint.owningPlaceable.ufname = prodPointUFName(prodpoint.owningPlaceable.baseName, prodpoint.productionLevel)        
         g_currentMission.inGameMenu.pageProduction.productionList:reloadData()
     end
 end

@@ -42,11 +42,6 @@ local function getProductionPointFromPosition(pos)
 	return nil
 end
 
-local function adjUpgradePrice2lvl(price, lvl)
-    -- Upgrade price increase by 5% each level
-    return math.floor(price + price * (0.05 * (lvl - 1)))
-end
-
 local function adjCapa2lvl(capacity, lvl)
     -- Strorage capacity increase by it's base value each level
     return math.floor(capacity * lvl)
@@ -76,33 +71,39 @@ local function adjCost2lvl(cost, lvl)
 	end
 end
 
-local function adjPrice2lvl(price, lvl)
-    -- Total value of the production point
-	-- Include base price and all upgrade costs
-	local upgradeValue = 0
-	for i=2, lvl do
-		upgradeValue = upgradeValue + adjUpgradePrice2lvl(price, i)
-	end
-    return price + upgradeValue
+local function adjUpgradePrice2lvl(price, lvl)
+    -- Upgrade price increase by 10% each level
+    return math.floor(price + price * (0.1 * lvl))
 end
+
+-- local function adjPrice2lvl(price, lvl)
+--     -- Total value of the production point
+-- 	-- Include base price and all upgrade costs
+-- 	local upgradeValue = 0
+-- 	for i=2, lvl do
+-- 		upgradeValue = upgradeValue + adjUpgradePrice2lvl(price, i)
+-- 	end
+--     return price + upgradeValue
+-- end
 
 function UpgradableFactories:adjProdPoint2lvl(prodpoint, lvl)
 	if lvl > 1 then
 		for _,p in ipairs(prodpoint.productions) do
-			p.cyclesPerMinute = adjCycl2lvl(p.cyclesPerMinute, lvl)
-			p.cyclesPerHour = adjCycl2lvl(p.cyclesPerHour, lvl)
-			p.cyclesPerMonth = adjCycl2lvl(p.cyclesPerMonth, lvl)
+			p.cyclesPerMinute = adjCycl2lvl(p.baseCyclesPerMinute, lvl)
+			p.cyclesPerHour = adjCycl2lvl(p.baseCyclesPerHour, lvl)
+			p.cyclesPerMonth = adjCycl2lvl(p.baseCyclesPerMonth, lvl)
 
-			p.costsPerActiveMinute = adjCost2lvl(p.costsPerActiveMinute, lvl)
-			p.costsPerActiveHour = adjCost2lvl(p.costsPerActiveHour, lvl)
-			p.costsPerActiveMonth = adjCost2lvl(p.costsPerActiveMonth, lvl)
+			p.costsPerActiveMinute = adjCost2lvl(p.baseCostsPerActiveMinute, lvl)
+			p.costsPerActiveHour = adjCost2lvl(p.baseCostsPerActiveHour, lvl)
+			p.costsPerActiveMonth = adjCost2lvl(p.baseCostsPerActiveMonth, lvl)
 		end
 		
 		for ft,s in pairs(prodpoint.storage.capacities) do
 			prodpoint.storage.capacities[ft] = adjCapa2lvl(s, lvl)
 		end
 
-		prodpoint.owningPlaceable.price = adjPrice2lvl(prodpoint.owningPlaceable.basePrice, lvl)
+		-- prodpoint.owningPlaceable.price = adjPrice2lvl(prodpoint.owningPlaceable.basePrice, lvl)
+		prodpoint.owningPlaceable.price = prodpoint.owningPlaceable.price + prodpoint.owningPlaceable.upgradePrice
 		prodpoint.owningPlaceable.upgradePrice = adjUpgradePrice2lvl(prodpoint.owningPlaceable.basePrice, lvl)
 	end
 
@@ -138,7 +139,16 @@ function UpgradableFactories:onFinalizePlacement()
 		if not p.productionLevel then
 			p.productionLevel = 1
 			p.owningPlaceable.basePrice = p.owningPlaceable.price
-			p.owningPlaceable.upgradePrice = adjUpgradePrice2lvl(p.owningPlaceable.basePrice, 2)
+			p.owningPlaceable.baseName = p.owningPlaceable:getName()
+			p.owningPlaceable.upgradePrice = adjUpgradePrice2lvl(p.owningPlaceable.basePrice, 1)
+			for _,prodline in ipairs(p.productions) do
+				prodline.baseCyclesPerMinute = prodline.cyclesPerMinute
+				prodline.baseCyclesPerHour = prodline.cyclesPerHour
+				prodline.baseCyclesPerMonth = prodline.cyclesPerMonth
+				prodline.baseCostsPerActiveMinute = prodline.costsPerActiveMinute
+				prodline.baseCostsPerActiveHour = prodline.costsPerActiveHour
+				prodline.baseCostsPerActiveMonth = prodline.costsPerActiveMonth
+			end
 		end
 	end
 end
