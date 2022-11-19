@@ -187,7 +187,6 @@ function UpgradableFactories:saveToXML()
 			local j = 0
             key2 = ""
             for ft,val in pairs(prod.storage.fillLevels) do
-				print(ft .. " " .. val)
                 key2 = key .. string.format(".fillLevels.fillType(%d)", j)
                 xmlFile:setInt(key2 .. "#id", ft)
                 xmlFile:setString(key2 .. "#fillType", g_currentMission.fillTypeManager:getFillTypeByIndex(ft).name)
@@ -201,7 +200,6 @@ end
 
 function UpgradableFactories:loadXML()
 	-- append when creating new save.
-	print("LoadXML")
 	if self.newSavegame then return end
 
     local xmlFile = XMLFile.loadIfExists("UpgradableFactoriesXML", self.xmlFilename)

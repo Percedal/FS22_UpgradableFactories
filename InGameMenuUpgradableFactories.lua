@@ -30,7 +30,8 @@ function InGameMenuUpgradableFactories:onButtonUpgrade()
     local pageProduction = g_currentMission.inGameMenu.pageProduction
     _, prodpoint = pageProduction:getSelectedProduction()
 
-    if g_currentMission.missionInfo.money >= prodpoint.owningPlaceable.upgradePrice then
+    local money = g_farmManager:getFarmById(g_currentMission:getFarmId()):getBalance()
+    if money >= prodpoint.owningPlaceable.upgradePrice then
         local text = string.format(
             g_i18n:getText("uf_upgrade_dialog"),
             prodpoint.owningPlaceable.baseName,
