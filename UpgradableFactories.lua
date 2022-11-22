@@ -25,7 +25,7 @@ function UpgradableFactories:delete()
 	g_messageCenter:unsubscribeAll(self)
 end
 
-function UpgradableFactories:onSavegameLoaded()	
+function UpgradableFactories:onSavegameLoaded()
 	self:initProductions()
 end
 
@@ -85,25 +85,29 @@ local function getOverallProductionValue(basePrice, lvl)
 	return basePrice + value
 end
 
+local function prodPointUFName(basename, level)
+    return string.format("%d - %s", level, basename)
+end
+
 function UpgradableFactories:adjProdPoint2lvl(prodpoint, lvl)
-	if lvl > 1 then
-		for _,p in ipairs(prodpoint.productions) do
-			p.cyclesPerMinute = getCycleAtLvl(p.baseCyclesPerMinute, lvl)
-			p.cyclesPerHour = getCycleAtLvl(p.baseCyclesPerHour, lvl)
-			p.cyclesPerMonth = getCycleAtLvl(p.baseCyclesPerMonth, lvl)
+	for _,p in ipairs(prodpoint.productions) do
+		p.cyclesPerMinute = getCycleAtLvl(p.baseCyclesPerMinute, lvl)
+		p.cyclesPerHour = getCycleAtLvl(p.baseCyclesPerHour, lvl)
+		p.cyclesPerMonth = getCycleAtLvl(p.baseCyclesPerMonth, lvl)
 
-			p.costsPerActiveMinute = getActiveCostAtLvl(p.baseCostsPerActiveMinute, lvl)
-			p.costsPerActiveHour = getActiveCostAtLvl(p.baseCostsPerActiveHour, lvl)
-			p.costsPerActiveMonth = getActiveCostAtLvl(p.baseCostsPerActiveMonth, lvl)
-		end
-		
-		for ft,s in pairs(prodpoint.storage.baseCapacities) do
-			prodpoint.storage.capacities[ft] = getCapacityAtLvl(s, lvl)
-		end
-
-		prodpoint.owningPlaceable.price = getOverallProductionValue(prodpoint.owningPlaceable.basePrice, lvl)
-		prodpoint.owningPlaceable.upgradePrice = getUpgradePriceAtLvl(prodpoint.owningPlaceable.basePrice, lvl)
+		p.costsPerActiveMinute = getActiveCostAtLvl(p.baseCostsPerActiveMinute, lvl)
+		p.costsPerActiveHour = getActiveCostAtLvl(p.baseCostsPerActiveHour, lvl)
+		p.costsPerActiveMonth = getActiveCostAtLvl(p.baseCostsPerActiveMonth, lvl)
 	end
+	
+	for ft,s in pairs(prodpoint.storage.baseCapacities) do
+		prodpoint.storage.capacities[ft] = getCapacityAtLvl(s, lvl)
+	end
+
+	prodpoint.owningPlaceable.price = getOverallProductionValue(prodpoint.owningPlaceable.basePrice, lvl)
+	prodpoint.owningPlaceable.upgradePrice = getUpgradePriceAtLvl(prodpoint.owningPlaceable.basePrice, lvl)
+
+	prodpoint.name = prodPointUFName(prodpoint.baseName, lvl)
 
 	prodpoint.owningPlaceable.getSellPrice = function ()
 		local priceMultiplier = 0.75
@@ -127,9 +131,7 @@ function UpgradableFactories:initProductions()
 		prodpoint.owningPlaceable.basePrice = prod.basePrice
 		prodpoint.owningPlaceable.price = getOverallProductionValue(prod.basePrice, prod.level)
 
-		-- if prodpoint then
 		self:adjProdPoint2lvl(prodpoint, prod.level)
-		-- end
 
 		prodpoint.storage.fillLevels = prod.fillLevels
 	end
@@ -139,9 +141,11 @@ function UpgradableFactories:onFinalizePlacement()
 	for _,p in ipairs(g_currentMission.productionChainManager.productionPoints) do
 		if not p.productionLevel then
 			p.productionLevel = 1
+
+			p.baseName = p:getName()
+			p.name = prodPointUFName(p:getName(), 1)
 			
 			p.owningPlaceable.basePrice = p.owningPlaceable.price
-			p.owningPlaceable.baseName = p.owningPlaceable:getName()
 			p.owningPlaceable.upgradePrice = getUpgradePriceAtLvl(p.owningPlaceable.basePrice, 1)
 			
 			for _,prodline in ipairs(p.productions) do
@@ -161,6 +165,13 @@ function UpgradableFactories:onFinalizePlacement()
 	end
 end
 
+function UpgradableFactories.setOwnerFarmId(prodpoint, farmId)
+    if farmId == 0 and prodpoint.productions[1].baseCyclesPerMinute then
+        prodpoint.productionLevel = 1
+        UpgradableFactories:adjProdPoint2lvl(prodpoint, 1)
+    end
+end
+
 function UpgradableFactories:saveToXML()
 	-- on a new save, create xmlFile path
 	if g_currentMission.missionInfo.savegameDirectory then
@@ -176,7 +187,7 @@ function UpgradableFactories:saveToXML()
 		for i,prod in ipairs(self.productionPoints) do
 			key = string.format("upgradableFactories.production(%d)", i-1)
 			xmlFile:setInt(key .. "#id", i)
-			xmlFile:setString(key .. "#name", prod.owningPlaceable.baseName)
+			xmlFile:setString(key .. "#name", prod.baseName)
 			xmlFile:setInt(key .. "#level", prod.productionLevel)
 			xmlFile:setInt(key .. "#basePrice", prod.owningPlaceable.basePrice)
 	
@@ -246,3 +257,4 @@ end
 
 PlaceableProductionPoint.onFinalizePlacement = Utils.appendedFunction(PlaceableProductionPoint.onFinalizePlacement, UpgradableFactories.onFinalizePlacement)
 FSCareerMissionInfo.saveToXMLFile = Utils.appendedFunction(FSCareerMissionInfo.saveToXMLFile, UpgradableFactories.saveToXML)
+ProductionPoint.setOwnerFarmId = Utils.appendedFunction(ProductionPoint.setOwnerFarmId, UpgradableFactories.setOwnerFarmId)
