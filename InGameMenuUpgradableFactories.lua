@@ -45,6 +45,10 @@ function InGameMenuUpgradableFactories:onButtonUpgrade()
             target=InGameMenuUpgradableFactories,
             args=prodpoint
         })
+    else
+        g_gui:showInfoDialog({
+			text = self.l10n:getText(ShopConfigScreen.L10N_SYMBOL.NOT_ENOUGH_MONEY_BUY)
+		})
     end
 end
 
