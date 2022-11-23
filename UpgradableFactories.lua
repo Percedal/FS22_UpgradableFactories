@@ -5,6 +5,10 @@ UpgradableFactories.modName = g_currentModName
 source(UpgradableFactories.dir .. "InGameMenuUpgradableFactories.lua")
 addModEventListener(UpgradableFactories)
 
+function UFInfo(infoMessage, ...)
+	print(string.format("  UpgradableFactories: " .. infoMessage, ...))
+end
+
 function UpgradableFactories:loadMap()
 	-- check if savegameDirectory exist -> on a new save, savegameDirectory doesn't exist at that moment
 	if g_currentMission.missionInfo.savegameDirectory then
@@ -73,7 +77,7 @@ end
 
 local function getUpgradePriceAtLvl(basePrice, lvl)
     -- Upgrade price increase by 10% each level
-    return math.floor(basePrice + basePrice * (0.1 * lvl))
+    return math.floor(basePrice + basePrice * 0.1 * lvl)
 end
 
 local function getOverallProductionValue(basePrice, lvl)
@@ -173,6 +177,7 @@ function UpgradableFactories.setOwnerFarmId(prodpoint, farmId)
 end
 
 function UpgradableFactories:saveToXML()
+	UFInfo("Saving to XML")
 	-- on a new save, create xmlFile path
 	if g_currentMission.missionInfo.savegameDirectory then
 		self.xmlFilename = g_currentMission.missionInfo.savegameDirectory .. "/upgradableFactories.xml"
@@ -210,11 +215,16 @@ function UpgradableFactories:saveToXML()
 end
 
 function UpgradableFactories:loadXML()
-	-- append when creating new save.
-	if self.newSavegame then return end
+	UFInfo("Loading XML...")
+
+	if self.newSavegame then
+		UFInfo("New savegame")
+		return
+	end
 
     local xmlFile = XMLFile.loadIfExists("UpgradableFactoriesXML", self.xmlFilename)
     if not xmlFile then
+		UFInfo("No XML file found")
 		return
     end
 
@@ -253,6 +263,7 @@ function UpgradableFactories:loadXML()
 		
         counter = counter +1
     end
+	UFInfo("%d productions loaded from XML", #self.loadedProductions)
 end
 
 PlaceableProductionPoint.onFinalizePlacement = Utils.appendedFunction(PlaceableProductionPoint.onFinalizePlacement, UpgradableFactories.onFinalizePlacement)

@@ -13,8 +13,6 @@ function InGameMenuUpgradableFactories.new(upgradableFactory)
 end
 
 function InGameMenuUpgradableFactories:initialize()
-    -- InGameMenuProductionFrame.onFrameOpen = Utils.appendedFunction(InGameMenuProductionFrame.onFrameOpen, InGameMenuUpgradableFactories.onFrameOpen)
-    -- InGameMenuProductionFrame.onFrameClose = Utils.appendedFunction(InGameMenuProductionFrame.onFrameClose, InGameMenuUpgradableFactories.onFrameClose)
     InGameMenuProductionFrame.updateMenuButtons = Utils.appendedFunction(InGameMenuProductionFrame.updateMenuButtons, InGameMenuUpgradableFactories.updateMenuButtons)
 end
 
@@ -27,10 +25,18 @@ function InGameMenuUpgradableFactories:getProductionPoints()
 end
 
 function InGameMenuUpgradableFactories:onButtonUpgrade()
+    UFInfo("Upgrade factory request")
     local pageProduction = g_currentMission.inGameMenu.pageProduction
     _, prodpoint = pageProduction:getSelectedProduction()
 
     local money = g_farmManager:getFarmById(g_currentMission:getFarmId()):getBalance()
+    UFInfo(
+        "%s level %d - %d/%d",
+        prodpoint.owningPlaceable:getName(),
+        prodpoint.productionLevel,
+        prodpoint.owningPlaceable.upgradePrice,
+        money
+    )
     if money >= prodpoint.owningPlaceable.upgradePrice then
         local text = string.format(
             g_i18n:getText("uf_upgrade_dialog"),
