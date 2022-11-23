@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
-<modDesc descVersion="64">
+<modDesc descVersion="72">
 	<author>Az#4971</author>	
     <version>1.0.0.0</version>    
 	<title>
@@ -11,12 +11,12 @@ Features :
 - Production chains now have levels that you can increase.
 - Upgrading a factory will cost you slightly more each level than buying a new building.
 - Upgrading cost is vastly compensated by the gain in production speed.
-- More production speed meens more storage space.
-- Because you don't have to build a new facility, you save on productions cost.
-- Factory value is increased when upgrading, so you can claim your investment back when selling a production.
+- More production speed means more storage space.
+- Because you don't have to build a new facility, you save on production costs.
+- Factory value is increased when upgrading, so you can claim your investment back when selling a facility.
 
 Note that there is no maximum level, only your money will limit you!
-This mod does not yet support multyplayer.
+This mod does not yet support multiplayer.
 More info on <a href="https://github.com/Percedal/FS22_UpgradableFactories">GitHub</a>.
 ]]></en>
     </description>    
