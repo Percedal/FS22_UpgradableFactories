@@ -6,17 +6,18 @@
         <en>Upgradable Factories</en>
     </title>       
 	<description>
-        <en><![CDATA[Upgrade your production facilities! With this mod you will be able to increase your production speed and storage, so you no longer need to place multiple factories to speed up your production rates.
+        <en><![CDATA[Upgrade your production facilities! With this mod you will be able to increase your production speeds and storages, so you no longer need to place multiple productions.
 Features :
 - Production chains now have levels that you can increase.
-- Upgrading a factory will cost you slightly more each level than buying a new building, about 5% each level.
-- Upgrading cost is vastly compensated by the gain in production speed: doubled at level 2 (plus a bonus of 15%), tripled at level 3 (plus a bonus of 20%)...
+- Upgrading a factory will cost you slightly more each level than buying a new building.
+- Upgrading cost is vastly compensated by the gain in production speed.
+- More production speed meens more storage space.
 - Because you don't have to build a new facility, you save on productions cost.
-- The selling price of your production have been updated. It will bring you back 75% of the overall building and upgrading costs.
+- Factory value is increased when upgrading, so you can claim your investment back when selling a production.
 
 Note that there is no maximum level, only your money will limit you!
 This mod does not yet support multyplayer.
-More info <a href="https://github.com/Percedal/FS22_UpgradableFactories">here</a>.
+More info on <a href="https://github.com/Percedal/FS22_UpgradableFactories">GitHub</a>.
 ]]></en>
     </description>    
 	<iconFilename>icon.dds</iconFilename>
