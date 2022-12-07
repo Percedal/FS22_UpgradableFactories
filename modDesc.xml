@@ -2,9 +2,12 @@
 <modDesc descVersion="72">
 	<author>Az#4971</author>	
     <version>1.0.0.0</version>    
-	<title>
+    <title>
         <en>Upgradable Factories</en>
-    </title>       
+        <fr>Usines Améliorables</fr>
+        <de>Aufrüstbare Fabriken</de>
+        <ru>Улучшаемые Производства</ru>
+    </title>  
 	<description>
         <en><![CDATA[Upgrade your production facilities! With this mod you will be able to increase your production speeds and storages, so you no longer need to place multiple productions.
 Features :
@@ -26,15 +29,17 @@ More info on <a href="https://github.com/Percedal/FS22_UpgradableFactories">GitH
 		<sourceFile filename="UpgradableFactories.lua" /> 
 	</extraSourceFiles>
 
-	<l10n>
+    <l10n>
         <text name="uf_upgrade">
             <en>Upgrade</en>
             <fr>Améliorer</fr>
+            <de>Upgrade</de>
             <ru>Улучшить</ru>
         </text>
 		<text name="uf_upgrade_dialog">
             <en>Upgrade %s to level %d for %s?</en>
             <fr>Améliorer %s au niveau %d pour %s ?</fr>
+            <de>Upgrade %s auf Stufe %d. Kosten: %s?</de>
             <ru>Улучшить %s до уровня %d за %s?</ru>
         </text>
     </l10n>
