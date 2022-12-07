@@ -6,6 +6,7 @@
         <en>Upgradable Factories</en>
         <fr>Usines Améliorables</fr>
         <de>Aufrüstbare Fabriken</de>
+        <ru>Улучшаемые Производства</ru>
     </title>       
 	<description>
         <en><![CDATA[
@@ -18,9 +19,14 @@ Features :
 - Because you don't have to build a new facility, you save on production costs.
 - Factory value is increased when upgrading, so you can claim your investment back when selling a facility.
 
+Changelog 1.1.0.0
+- Added RU translation
+- Added maximum level
+
 Note that the maximum level you can reach is 10.
 As of yet, this mod does not support multiplayer.
-More info on <a href="https://github.com/Percedal/FS22_UpgradableFactories">GitHub</a>.]]>
+More info on <a href="https://github.com/Percedal/FS22_UpgradableFactories">GitHub</a>.
+Thanks to <a href="https://github.com/vitalii2011">vitalii2011</a> for RU translation]]>
         </en>
         <fr><![CDATA[
 Améliorez vos installations de production ! Avec ce mod, vous pourrez augmenter vos vitesses de production et de stockages, de sorte que vous n'aurez plus besoin de placer plusieurs productions.
@@ -32,9 +38,14 @@ Caractéristiques :
 - Comme vous n'avez pas besoin de construire une nouvelle usine, vous économisez sur les coûts de production.
 - La valeur de l'usine augmente lors de la mise à niveau, ce qui vous permet de récupérer votre investissement lors de la vente d'une installation.
 
+Changelog 1.1.0.0
+- Ajout de la traduction russe
+- Ajout d'un niveau maximum
+
 Notez que le niveau maximal que vous pouvez atteindre est 10.
 Ce mod ne supporte pas encore le multijoueur.
-Plus d'informations sur <a href="https://github.com/Percedal/FS22_UpgradableFactories">GitHub</a>.]]>
+Plus d'informations sur <a href="https://github.com/Percedal/FS22_UpgradableFactories">GitHub</a>.
+Merci à <a href="https://github.com/vitalii2011">vitalii2011</a> pour la traduction en russe]]>
         </fr>
         <de><![CDATA[
 Verbessern Sie Ihre Produktionsanlagen! Mit dieser Mod können Sie Ihre Produktionsgeschwindigkeiten und Lagerräume erhöhen, so dass Sie nicht mehr mehrere Produktionen platzieren müssen.
@@ -46,9 +57,14 @@ Eigenschaften:
 - Da Sie keine neue Anlage bauen müssen, sparen Sie Produktionskosten.
 - Der Wert der Fabrik wird durch die Aufrüstung erhöht, so dass Sie beim Verkauf einer Anlage Ihre Investition zurückerhalten können.
 
+Changelog 1.1.0.0
+- Russische Übersetzung hinzugefügt
+- Maximale Stufe hinzugefügt
+
 Dass die maximale Stufe, die Sie erreichen können, 10 ist.
 Diese Mod unterstützt noch keinen Multiplayer.
-Mehr Infos auf <a href="https://github.com/Percedal/FS22_UpgradableFactories">GitHub</a>.]]>
+Mehr Infos auf <a href="https://github.com/Percedal/FS22_UpgradableFactories">GitHub</a>.
+Vielen Dank an <a href="https://github.com/vitalii2011">vitalii2011</a> für die Übersetzung ins Russische]]>
         </de>
     </description>    
 	<iconFilename>icon.dds</iconFilename>
@@ -62,16 +78,19 @@ Mehr Infos auf <a href="https://github.com/Percedal/FS22_UpgradableFactories">Gi
             <en>Upgrade</en>
             <fr>Améliorer</fr>
             <de>Upgrade</de>
+            <ru>Улучшить</ru>
         </text>
 		<text name="uf_upgrade_dialog">
             <en>Upgrade %s to level %d for %s?</en>
             <fr>Améliorer %s au niveau %d pour %s ?</fr>
             <de>Upgrade %s auf Stufe %d. Kosten: %s?</de>
+            <ru>Улучшить %s до уровня %d за %s?</ru>
         </text>
         <text name="uf_max_level">
             <en>Your production is already at maximum level.</en>
             <fr>Votre production est déjà au niveau maximum.</fr>
             <de>Ihre Produktion ist bereits auf dem Höchststand.</de>
+            <ru>Ваше производство уже на максимальном уровне.</ru>
         </text>
     </l10n>
 </modDesc>
