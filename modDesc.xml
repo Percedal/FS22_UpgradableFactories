@@ -30,10 +30,12 @@ More info on <a href="https://github.com/Percedal/FS22_UpgradableFactories">GitH
         <text name="uf_upgrade">
             <en>Upgrade</en>
             <fr>Améliorer</fr>
+            <ru>Улучшить</ru>
         </text>
 		<text name="uf_upgrade_dialog">
             <en>Upgrade %s to level %d for %s?</en>
             <fr>Améliorer %s au niveau %d pour %s ?</fr>
+            <ru>Улучшить %s до уровня %d за %s?</ru>
         </text>
     </l10n>
 </modDesc>
