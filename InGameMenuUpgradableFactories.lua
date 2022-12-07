@@ -37,7 +37,11 @@ function InGameMenuUpgradableFactories:onButtonUpgrade()
         prodpoint.owningPlaceable.upgradePrice,
         money
     )
-    if money >= prodpoint.owningPlaceable.upgradePrice then
+    if prodpoint.productionLevel >= UpgradableFactories.MAX_LEVEL then
+        g_gui:showInfoDialog({
+			text = g_i18n:getText("uf_max_level")
+		})
+    elseif money >= prodpoint.owningPlaceable.upgradePrice then
         local text = string.format(
             g_i18n:getText("uf_upgrade_dialog"),
             prodpoint.owningPlaceable:getName(),
