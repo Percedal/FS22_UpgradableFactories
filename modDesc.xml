@@ -1,12 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="72">
 	<author>Az#4971</author>	
-    <version>1.0.0.0</version>    
+    <version>1.1.0.0</version>    
 	<title>
         <en>Upgradable Factories</en>
+        <fr>Usines Améliorables</fr>
+        <de>Aufrüstbare Fabriken</de>
     </title>       
 	<description>
-        <en><![CDATA[Upgrade your production facilities! With this mod you will be able to increase your production speeds and storages, so you no longer need to place multiple productions.
+        <en><![CDATA[
+Upgrade your production facilities! With this mod you will be able to increase your production speeds and storages, so you no longer need to place multiple productions.
 Features :
 - Production chains now have levels that you can increase.
 - Upgrading a factory will cost you slightly more each level than buying a new building.
@@ -15,10 +18,38 @@ Features :
 - Because you don't have to build a new facility, you save on production costs.
 - Factory value is increased when upgrading, so you can claim your investment back when selling a facility.
 
-Note that there is no maximum level, only your money will limit you!
-This mod does not yet support multiplayer.
-More info on <a href="https://github.com/Percedal/FS22_UpgradableFactories">GitHub</a>.
-]]></en>
+Note that the maximum level you can reach is 10.
+As of yet, this mod does not support multiplayer.
+More info on <a href="https://github.com/Percedal/FS22_UpgradableFactories">GitHub</a>.]]>
+        </en>
+        <fr><![CDATA[
+Améliorez vos installations de production ! Avec ce mod, vous pourrez augmenter vos vitesses de production et de stockages, de sorte que vous n'aurez plus besoin de placer plusieurs productions.
+Caractéristiques :
+- Les chaînes de production ont maintenant des niveaux que vous pouvez augmenter.
+- L'amélioration d'une usine vous coûtera légèrement plus cher à chaque niveau que l'achat d'un nouveau bâtiment.
+- Le coût d'amélioration est largement compensé par le gain en vitesse de production.
+- Plus de vitesse de production signifie plus d'espace de stockage.
+- Comme vous n'avez pas besoin de construire une nouvelle usine, vous économisez sur les coûts de production.
+- La valeur de l'usine augmente lors de la mise à niveau, ce qui vous permet de récupérer votre investissement lors de la vente d'une installation.
+
+Notez que le niveau maximal que vous pouvez atteindre est 10.
+Ce mod ne supporte pas encore le multijoueur.
+Plus d'informations sur <a href="https://github.com/Percedal/FS22_UpgradableFactories">GitHub</a>.]]>
+        </fr>
+        <de><![CDATA[
+Verbessern Sie Ihre Produktionsanlagen! Mit dieser Mod können Sie Ihre Produktionsgeschwindigkeiten und Lagerräume erhöhen, so dass Sie nicht mehr mehrere Produktionen platzieren müssen.
+Eigenschaften:
+- Produktionsketten haben jetzt Stufen, die Sie erhöhen können.
+- Das Aufrüsten einer Fabrik kostet dich etwas mehr pro Stufe als der Kauf eines neuen Gebäudes.
+- Die Kosten für die Aufrüstung werden durch den Gewinn an Produktionsgeschwindigkeit bei weitem kompensiert.
+- Mehr Produktionsgeschwindigkeit bedeutet mehr Lagerplatz.
+- Da Sie keine neue Anlage bauen müssen, sparen Sie Produktionskosten.
+- Der Wert der Fabrik wird durch die Aufrüstung erhöht, so dass Sie beim Verkauf einer Anlage Ihre Investition zurückerhalten können.
+
+Dass die maximale Stufe, die Sie erreichen können, 10 ist.
+Diese Mod unterstützt noch keinen Multiplayer.
+Mehr Infos auf <a href="https://github.com/Percedal/FS22_UpgradableFactories">GitHub</a>.]]>
+        </de>
     </description>    
 	<iconFilename>icon.dds</iconFilename>
     <multiplayer supported="false"/>	
@@ -30,10 +61,17 @@ More info on <a href="https://github.com/Percedal/FS22_UpgradableFactories">GitH
         <text name="uf_upgrade">
             <en>Upgrade</en>
             <fr>Améliorer</fr>
+            <de>Upgrade</de>
         </text>
 		<text name="uf_upgrade_dialog">
             <en>Upgrade %s to level %d for %s?</en>
             <fr>Améliorer %s au niveau %d pour %s ?</fr>
+            <de>Upgrade %s auf Stufe %d. Kosten: %s?</de>
+        </text>
+        <text name="uf_max_level">
+            <en>Your production is already at maximum level.</en>
+            <fr>Votre production est déjà au niveau maximum.</fr>
+            <de>Ihre Produktion ist bereits auf dem Höchststand.</de>
         </text>
     </l10n>
 </modDesc>

@@ -1,6 +1,7 @@
 UpgradableFactories = {}
 UpgradableFactories.dir = g_currentModDirectory
 UpgradableFactories.modName = g_currentModName
+UpgradableFactories.MAX_LEVEL = 10
 
 source(UpgradableFactories.dir .. "InGameMenuUpgradableFactories.lua")
 addModEventListener(UpgradableFactories)
@@ -131,6 +132,9 @@ function UpgradableFactories:initProductions()
 	self.productionPoints = g_currentMission.productionChainManager.farmIds[1].productionPoints
 	for _,prod in ipairs(self.loadedProductions) do
 		local prodpoint = getProductionPointFromPosition(prod.position)
+		if prod.level > UpgradableFactories.MAX_LEVEL then
+			prod.level = UpgradableFactories.MAX_LEVEL
+		end
 		prodpoint.productionLevel = prod.level
 		prodpoint.owningPlaceable.basePrice = prod.basePrice
 		prodpoint.owningPlaceable.price = getOverallProductionValue(prod.basePrice, prod.level)
