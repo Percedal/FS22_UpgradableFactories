@@ -212,7 +212,7 @@ function UpgradableFactories:saveToXML()
 
 	local xmlFile = XMLFile.create("UpgradableFactoriesXML", self.xmlFilename, "upgradableFactories")
 	xmlFile:setInt("upgradableFactories#maxLevel", UpgradableFactories.max_level)
-	
+
 	-- check if player has owned production installed
 	if #g_currentMission.productionChainManager.farmIds > 0 then	
 		self.productionPoints = g_currentMission.productionChainManager.farmIds[1].productionPoints
@@ -255,8 +255,6 @@ function UpgradableFactories:loadXML()
 		return
     end
 
-	local ml = getXMLInt(xmlFile.handle, "upgradableFactories#maxLevel")
-
 	self.loadedProductions = {}
     local counter = 0
     while true do
@@ -295,7 +293,8 @@ function UpgradableFactories:loadXML()
         counter = counter +1
     end
 
-	if ml then
+	local ml = getXMLInt(xmlFile.handle, "upgradableFactories#maxLevel")
+	if ml and ml > 0 and ml < 100 then
 		self.max_level = ml
 	end
 	UFInfo(#self.loadedProductions.." productions loaded from XML")
