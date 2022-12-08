@@ -1,7 +1,7 @@
 UpgradableFactories = {}
 UpgradableFactories.dir = g_currentModDirectory
 UpgradableFactories.modName = g_currentModName
-UpgradableFactories.MAX_LEVEL = 10
+UpgradableFactories.max_level = 10
 
 source(UpgradableFactories.dir .. "InGameMenuUpgradableFactories.lua")
 addModEventListener(UpgradableFactories)
@@ -11,6 +11,8 @@ function UFInfo(infoMessage, ...)
 end
 
 function UpgradableFactories:loadMap()
+	addConsoleCommand('ufMaxLevel', 'Update UpgradableFactories max level', 'updateml', self)
+
 	-- check if savegameDirectory exist -> on a new save, savegameDirectory doesn't exist at that moment
 	if g_currentMission.missionInfo.savegameDirectory then
 		self.xmlFilename = g_currentMission.missionInfo.savegameDirectory .. "/upgradableFactories.xml"
@@ -125,16 +127,13 @@ function UpgradableFactories:adjProdPoint2lvl(prodpoint, lvl)
 end
 
 function UpgradableFactories:initProductions()
-	if self.newSavegame or not self.loadedProductions then
+	if self.newSavegame or not self.loadedProductions or #self.loadedProductions < 1 then
 		return
 	end
 
 	self.productionPoints = g_currentMission.productionChainManager.farmIds[1].productionPoints
 	for _,prod in ipairs(self.loadedProductions) do
 		local prodpoint = getProductionPointFromPosition(prod.position)
-		if prod.level > UpgradableFactories.MAX_LEVEL then
-			prod.level = UpgradableFactories.MAX_LEVEL
-		end
 		prodpoint.productionLevel = prod.level
 		prodpoint.owningPlaceable.basePrice = prod.basePrice
 		prodpoint.owningPlaceable.price = getOverallProductionValue(prod.basePrice, prod.level)
@@ -180,6 +179,30 @@ function UpgradableFactories.setOwnerFarmId(prodpoint, farmId)
     end
 end
 
+function UpgradableFactories:updateml(arg)
+	if not arg then
+		print("ufMaxLevel <max_level>")
+		return
+	end
+
+	local n = tonumber(arg)
+	if not n then
+		print("ufMaxLevel <max_level>")
+		print("<max_level> must be a number")
+		return
+	elseif n < 1 or n > 99 then
+		print("ufMaxLevel <max_level>")
+		print("<max_level> must be between 1 and 99")
+		return
+	end
+
+	self.max_level = n
+
+	self:initProductions()
+
+	UFInfo("Production maximum level has been updated to level "..n, "")
+end
+
 function UpgradableFactories:saveToXML()
 	UFInfo("Saving to XML")
 	-- on a new save, create xmlFile path
@@ -188,13 +211,13 @@ function UpgradableFactories:saveToXML()
 	end
 
 	local xmlFile = XMLFile.create("UpgradableFactoriesXML", self.xmlFilename, "upgradableFactories")
-	
+	xmlFile:setInt("upgradableFactories#maxLevel", UpgradableFactories.max_level)
+
 	-- check if player has owned production installed
-	if #g_currentMission.productionChainManager.farmIds > 0 then
-		local key = ""
+	if #g_currentMission.productionChainManager.farmIds > 0 then	
 		self.productionPoints = g_currentMission.productionChainManager.farmIds[1].productionPoints
 		for i,prod in ipairs(self.productionPoints) do
-			key = string.format("upgradableFactories.production(%d)", i-1)
+			local key = string.format("upgradableFactories.production(%d)", i-1)
 			xmlFile:setInt(key .. "#id", i)
 			xmlFile:setString(key .. "#name", prod.baseName)
 			xmlFile:setInt(key .. "#level", prod.productionLevel)
@@ -239,10 +262,12 @@ function UpgradableFactories:loadXML()
 		
 		if not getXMLInt(xmlFile.handle, key .. "#id") then break end
 		
+		local level = getXMLInt(xmlFile.handle,key .. "#level")
 		table.insert(
 			self.loadedProductions,
 			{
-				level = getXMLInt(xmlFile.handle,key .. "#level"),
+				level = level,
+				name = getXMLString(xmlFile.handle, key .. "#name"),
 				basePrice = getXMLInt(xmlFile.handle,key .. "#basePrice"),
 				position = {
 					x = getXMLFloat(xmlFile.handle, key .. ".position#x"),
@@ -267,7 +292,21 @@ function UpgradableFactories:loadXML()
 		
         counter = counter +1
     end
-	UFInfo("%d productions loaded from XML", #self.loadedProductions)
+
+	local ml = getXMLInt(xmlFile.handle, "upgradableFactories#maxLevel")
+	if ml and ml > 0 and ml < 100 then
+		self.max_level = ml
+	end
+	UFInfo(#self.loadedProductions.." productions loaded from XML")
+	UFInfo("Production maximum level: "..self.max_level)
+
+	if #self.loadedProductions > 0 then
+		for _,p in ipairs(self.loadedProductions) do
+			if p.level > self.max_level then
+				UFInfo("%s over max level: %d", p.name, p.level)
+			end
+		end
+	end
 end
 
 PlaceableProductionPoint.onFinalizePlacement = Utils.appendedFunction(PlaceableProductionPoint.onFinalizePlacement, UpgradableFactories.onFinalizePlacement)
