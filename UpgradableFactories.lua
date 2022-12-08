@@ -134,9 +134,6 @@ function UpgradableFactories:initProductions()
 	self.productionPoints = g_currentMission.productionChainManager.farmIds[1].productionPoints
 	for _,prod in ipairs(self.loadedProductions) do
 		local prodpoint = getProductionPointFromPosition(prod.position)
-		if prod.level > self.max_level then
-			prod.level = self.max_level
-		end
 		prodpoint.productionLevel = prod.level
 		prodpoint.owningPlaceable.basePrice = prod.basePrice
 		prodpoint.owningPlaceable.price = getOverallProductionValue(prod.basePrice, prod.level)
@@ -214,12 +211,10 @@ function UpgradableFactories:saveToXML()
 	end
 
 	local xmlFile = XMLFile.create("UpgradableFactoriesXML", self.xmlFilename, "upgradableFactories")
+	xmlFile:setInt("upgradableFactories#maxLevel", UpgradableFactories.max_level)
 	
 	-- check if player has owned production installed
-	if #g_currentMission.productionChainManager.farmIds > 0 then
-		
-		xmlFile:setInt("upgradableFactories#maxLevel", UpgradableFactories.max_level)
-		
+	if #g_currentMission.productionChainManager.farmIds > 0 then	
 		self.productionPoints = g_currentMission.productionChainManager.farmIds[1].productionPoints
 		for i,prod in ipairs(self.productionPoints) do
 			local key = string.format("upgradableFactories.production(%d)", i-1)
@@ -270,14 +265,11 @@ function UpgradableFactories:loadXML()
 		if not getXMLInt(xmlFile.handle, key .. "#id") then break end
 		
 		local level = getXMLInt(xmlFile.handle,key .. "#level")
-		if level > self.max_level then
-			ml = level
-		end
-
 		table.insert(
 			self.loadedProductions,
 			{
 				level = level,
+				name = getXMLString(xmlFile.handle, key .. "#name"),
 				basePrice = getXMLInt(xmlFile.handle,key .. "#basePrice"),
 				position = {
 					x = getXMLFloat(xmlFile.handle, key .. ".position#x"),
@@ -308,6 +300,14 @@ function UpgradableFactories:loadXML()
 	end
 	UFInfo(#self.loadedProductions.." productions loaded from XML")
 	UFInfo("Production maximum level: "..self.max_level)
+
+	if #self.loadedProductions > 0 then
+		for _,p in ipairs(self.loadedProductions) do
+			if p.level > self.max_level then
+				UFInfo("%s over max level: %d", p.name, p.level)
+			end
+		end
+	end
 end
 
 PlaceableProductionPoint.onFinalizePlacement = Utils.appendedFunction(PlaceableProductionPoint.onFinalizePlacement, UpgradableFactories.onFinalizePlacement)
