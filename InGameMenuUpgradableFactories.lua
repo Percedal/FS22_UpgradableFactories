@@ -25,22 +25,23 @@ function InGameMenuUpgradableFactories:getProductionPoints()
 end
 
 function InGameMenuUpgradableFactories:onButtonUpgrade()
-    UFInfo("Upgrade factory request")
     local pageProduction = g_currentMission.inGameMenu.pageProduction
     _, prodpoint = pageProduction:getSelectedProduction()
 
     local money = g_farmManager:getFarmById(g_currentMission:getFarmId()):getBalance()
     UFInfo(
-        "%s level %d - %d/%d",
+        "Request upgrade %s to level %d/%d (%s / %s)",
         prodpoint.owningPlaceable:getName(),
         prodpoint.productionLevel,
-        prodpoint.owningPlaceable.upgradePrice,
-        money
+        UpgradableFactories.max_level,
+        g_i18n:formatMoney(prodpoint.owningPlaceable.upgradePrice),
+        g_i18n:formatMoney(money)
     )
-    if prodpoint.productionLevel >= UpgradableFactories.MAX_LEVEL then
+    if prodpoint.productionLevel >= UpgradableFactories.max_level then
         g_gui:showInfoDialog({
 			text = g_i18n:getText("uf_max_level")
 		})
+        UFInfo("Production already at max level")
     elseif money >= prodpoint.owningPlaceable.upgradePrice then
         local text = string.format(
             g_i18n:getText("uf_upgrade_dialog"),
@@ -59,6 +60,7 @@ function InGameMenuUpgradableFactories:onButtonUpgrade()
         g_gui:showInfoDialog({
 			text = self.l10n:getText(ShopConfigScreen.L10N_SYMBOL.NOT_ENOUGH_MONEY_BUY)
 		})
+        UFInfo("Not enough money")
     end
 end
 
@@ -70,6 +72,10 @@ function InGameMenuUpgradableFactories:onUpgradeConfirm(confirm, prodpoint)
         UpgradableFactories:adjProdPoint2lvl(prodpoint, prodpoint.productionLevel)
      
         g_currentMission.inGameMenu.pageProduction.productionList:reloadData()
+        
+        UFInfo("Upgrade confirmed")
+    else
+        UFInfo("Upgrade canceled")
     end
 end
 
