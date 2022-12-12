@@ -21,9 +21,9 @@ Features :
 
 Changelog <a href="https://github.com/Percedal/FS22_UpgradableFactories/releases/tag/v1.1.0.0">1.1.0.0</a>
 - Added RU translation
+- Fixed a bug blocking the game loading at 99%
 - Factories now have a maximum level (default 10)
 - Added a console command to modify factory max level (ufMaxLevel)
-- Maximum factories level is saved in savegame file upgradableFactories.xml
 
 Note that the maximum level you can reach is 10.
 As of yet, this mod does not support multiplayer.
@@ -42,9 +42,9 @@ Caractéristiques :
 
 Changelog <a href="https://github.com/Percedal/FS22_UpgradableFactories/releases/tag/v1.1.0.0">1.1.0.0</a>
 - Ajout de la traduction russe
+- Correction d'un bug bloquant le chargement à 99%
 - Les usines ont maintenant un niveau maximum (par défaut 10)
 - Ajout d'une commande pour modifier le niveau maximum des usines (ufMaxLevel)
-- Le niveau maximal des usines est enregistré dans le fichier de sauvegarde "upgradableFactories.xml"
 
 Notez que le niveau maximal que vous pouvez atteindre est 10.
 Ce mod ne supporte pas encore le multijoueur.
@@ -63,9 +63,9 @@ Eigenschaften:
 
 Changelog <a href="https://github.com/Percedal/FS22_UpgradableFactories/releases/tag/v1.1.0.0">1.1.0.0</a>
 - Russische Übersetzung hinzugefügt
+- Ein Fehler wurde behoben, der das Laden des Spiels bei 99% blockierte.
 - Fabriken haben jetzt eine maximale Stufe (Standard 10)
 - Konsolenbefehl zum Ändern des maximalen Levels von Fabriken hinzugefügt (ufMaxLevel)
-- Die maximale Fabrikstufe wird in der Spielstandsdatei upgradeableFactories.xml gespeichert
 
 Dass die maximale Stufe, die Sie erreichen können, 10 ist.
 Diese Mod unterstützt noch keinen Multiplayer.
