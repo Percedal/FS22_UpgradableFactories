@@ -42,7 +42,7 @@ local function getProductionPointFromPosition(pos)
 	end
 	
 	for _,prod in ipairs(g_currentMission.productionChainManager.farmIds[1].productionPoints) do
-		if MathUtil.getPointPointDistanceSquared(pos.x, pos.y, prod.owningPlaceable.position.x, prod.owningPlaceable.position.y) < 1 then
+		if MathUtil.getPointPointDistanceSquared(pos.x, pos.y, prod.owningPlaceable.position.x, prod.owningPlaceable.position.y) < 0.0001 then
 			return prod
 		end
 	end

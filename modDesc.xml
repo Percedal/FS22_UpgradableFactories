@@ -22,6 +22,7 @@ Features :
 Changelog <a href="https://github.com/Percedal/FS22_UpgradableFactories/releases/tag/v1.1.0.0">1.1.0.0</a>
 - Added RU translation
 - Fixed a bug blocking the game loading at 99%
+- Fixed a bug where levels were not properly attributed after restart
 - Factories now have a maximum level (default 10)
 - Added a console command to modify factory max level (ufMaxLevel)
 
@@ -43,6 +44,7 @@ Caractéristiques :
 Changelog <a href="https://github.com/Percedal/FS22_UpgradableFactories/releases/tag/v1.1.0.0">1.1.0.0</a>
 - Ajout de la traduction russe
 - Correction d'un bug bloquant le chargement à 99%
+- Correction d'un bug où les niveaux n'étaient pas correctement attribués après le redémarrage.
 - Les usines ont maintenant un niveau maximum (par défaut 10)
 - Ajout d'une commande pour modifier le niveau maximum des usines (ufMaxLevel)
 
@@ -64,6 +66,7 @@ Eigenschaften:
 Changelog <a href="https://github.com/Percedal/FS22_UpgradableFactories/releases/tag/v1.1.0.0">1.1.0.0</a>
 - Russische Übersetzung hinzugefügt
 - Ein Fehler wurde behoben, der das Laden des Spiels bei 99% blockierte.
+- Ein Fehler wurde behoben, bei dem Ebenen nach einem Neustart nicht korrekt zugeordnet wurden.
 - Fabriken haben jetzt eine maximale Stufe (Standard 10)
 - Konsolenbefehl zum Ändern des maximalen Levels von Fabriken hinzugefügt (ufMaxLevel)
 
