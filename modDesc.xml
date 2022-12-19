@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="72">
 	<author>Az#4971</author>	
     <version>1.1.0.0</version>    
@@ -7,6 +7,7 @@
         <fr>Usines Améliorables</fr>
         <de>Aufrüstbare Fabriken</de>
         <ru>Улучшаемые Производства</ru>
+	<it>Fabbriche potenziabili</it>
     </title>       
 	<description>
         <en><![CDATA[
@@ -21,9 +22,9 @@ Features :
 
 Changelog <a href="https://github.com/Percedal/FS22_UpgradableFactories/releases/tag/v1.1.0.0">1.1.0.0</a>
 - Added RU translation
+- Fixed a bug blocking the game loading at 99%
 - Factories now have a maximum level (default 10)
 - Added a console command to modify factory max level (ufMaxLevel)
-- Maximum factories level is saved in savegame file upgradableFactories.xml
 
 Note that the maximum level you can reach is 10.
 As of yet, this mod does not support multiplayer.
@@ -42,9 +43,9 @@ Caractéristiques :
 
 Changelog <a href="https://github.com/Percedal/FS22_UpgradableFactories/releases/tag/v1.1.0.0">1.1.0.0</a>
 - Ajout de la traduction russe
+- Correction d'un bug bloquant le chargement à 99%
 - Les usines ont maintenant un niveau maximum (par défaut 10)
 - Ajout d'une commande pour modifier le niveau maximum des usines (ufMaxLevel)
-- Le niveau maximal des usines est enregistré dans le fichier de sauvegarde "upgradableFactories.xml"
 
 Notez que le niveau maximal que vous pouvez atteindre est 10.
 Ce mod ne supporte pas encore le multijoueur.
@@ -63,17 +64,38 @@ Eigenschaften:
 
 Changelog <a href="https://github.com/Percedal/FS22_UpgradableFactories/releases/tag/v1.1.0.0">1.1.0.0</a>
 - Russische Übersetzung hinzugefügt
+- Ein Fehler wurde behoben, der das Laden des Spiels bei 99% blockierte.
 - Fabriken haben jetzt eine maximale Stufe (Standard 10)
 - Konsolenbefehl zum Ändern des maximalen Levels von Fabriken hinzugefügt (ufMaxLevel)
-- Die maximale Fabrikstufe wird in der Spielstandsdatei upgradeableFactories.xml gespeichert
 
 Dass die maximale Stufe, die Sie erreichen können, 10 ist.
 Diese Mod unterstützt noch keinen Multiplayer.
 Mehr Infos auf <a href="https://github.com/Percedal/FS22_UpgradableFactories">GitHub</a>.
 Vielen Dank an vitalii2011 auf GitHub für die Übersetzung ins Russische]]>
         </de>
+	<it><![CDATA[
+Aggiorna i tuoi impianti di produzione! Con questa mod sarai in grado di aumentare le tue velocità di produzione ed i tuoi depositi, quindi non avrai più bisogno di posizionare più produzioni.
+Caratteristiche :
+- Le catene di produzione ora hanno livelli che puoi aumentare.
+- L'aggiornamento di una fabbrica ti costerà leggermente di più per ogni livello rispetto all'acquisto di un nuovo edificio.
+- Il costo di aggiornamento è ampiamente compensato dall'aumento della velocità di produzione.
+- Più velocità di produzione significa più spazio di archiviazione.
+- Poiché non devi costruire una nuova struttura, risparmi sui costi di produzione.
+- Il valore della fabbrica aumenta durante l'aggiornamento, quindi puoi richiedere il rimborso dell'investimento quando vendi una struttura.
+
+Registro delle modifiche <a href="https://github.com/Percedal/FS22_UpgradableFactories/releases/tag/v1.1.0.0">1.1.0.0</a>
+- Aggiunta la traduzione RU
+- Risolto un bug che bloccava il caricamento del gioco al 99%
+- Le fabbriche ora hanno un livello massimo (predefinito 10)
+- Aggiunto un comando da console per modificare il livello massimo di fabbrica (ufMaxLevel)
+
+Nota che il livello massimo che puoi raggiungere è 10.
+Al momento, questa mod non supporta il multiplayer.
+Ulteriori informazioni su <a href="https://github.com/Percedal/FS22_UpgradableFactories">GitHub</a>.
+Grazie a vitalii2011 su GitHub per la traduzione in RU]]>
+       </it>
     </description>    
-	<iconFilename>icon.dds</iconFilename>
+	<iconFilename>icon_UpgradableFactories.dds</iconFilename>
     <multiplayer supported="false"/>	
 	<extraSourceFiles>	
 		<sourceFile filename="UpgradableFactories.lua" /> 
@@ -85,18 +107,21 @@ Vielen Dank an vitalii2011 auf GitHub für die Übersetzung ins Russische]]>
             <fr>Améliorer</fr>
             <de>Upgrade</de>
             <ru>Улучшить</ru>
+	    <it>Aggiornamento</it>
         </text>
 		<text name="uf_upgrade_dialog">
             <en>Upgrade %s to level %d for %s?</en>
             <fr>Améliorer %s au niveau %d pour %s ?</fr>
             <de>Upgrade %s auf Stufe %d. Kosten: %s?</de>
             <ru>Улучшить %s до уровня %d за %s?</ru>
+	    <it>Aggiorna %s al livello %d per %s?</it>
         </text>
         <text name="uf_max_level">
             <en>Your production is already at maximum level.</en>
             <fr>Votre production est déjà au niveau maximum.</fr>
             <de>Ihre Produktion ist bereits auf dem Höchststand.</de>
             <ru>Ваше производство уже на максимальном уровне.</ru>
+	    <it>La tua produzione è già al massimo livello.</it>
         </text>
     </l10n>
 </modDesc>
