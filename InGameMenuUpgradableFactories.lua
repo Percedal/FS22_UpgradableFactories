@@ -1,46 +1,35 @@
 InGameMenuUpgradableFactories = {}
-local inGameMenuUpgradableFactories_mt = Class(InGameMenuUpgradableFactories)
 
 InGameMenuProductionFrame.UPDATE_INTERVAL = 1000
 
-function InGameMenuUpgradableFactories.new(upgradableFactory)
-    local self = setmetatable({}, inGameMenuUpgradableFactories_mt)
-    
-    self.name = "inGameMenuUpgradableFactories"
-    self.upgradableFactories = upgradableFactory
-
-    return self
-end
-
 function InGameMenuUpgradableFactories:initialize()
+    self.inGameMenu = g_currentMission.inGameMenu
+    self.pageProduction = g_currentMission.inGameMenu.pageProduction
+    self.pageProduction.upgradeButtonInfo = {
+        profile = "buttonOK",
+        inputAction = InputAction.MENU_EXTRA_1,
+        text = g_i18n:getText("uf_upgrade"),
+        callback = InGameMenuUpgradableFactories.onButtonUpgrade
+    }
+
     InGameMenuProductionFrame.updateMenuButtons = Utils.appendedFunction(InGameMenuProductionFrame.updateMenuButtons, InGameMenuUpgradableFactories.updateMenuButtons)
-end
-
-function InGameMenuUpgradableFactories:delete()
-    InGameMenuUpgradableFactories:superClass().delete(self)
-end
-
-function InGameMenuUpgradableFactories:getProductionPoints()
-    return g_currentMission.inGameMenu.pageProduction:getProductionPoints()
+    InGameMenuProductionFrame.onListSelectionChanged = Utils.appendedFunction(InGameMenuProductionFrame.onListSelectionChanged, InGameMenuUpgradableFactories.onListSelectionChanged)
 end
 
 function InGameMenuUpgradableFactories:onButtonUpgrade()
-    local pageProduction = g_currentMission.inGameMenu.pageProduction
-    _, prodpoint = pageProduction:getSelectedProduction()
-
+    local _, prodpoint = self.pageProduction:getSelectedProduction()
     local money = g_farmManager:getFarmById(g_currentMission:getFarmId()):getBalance()
     UFInfo(
-        "Request upgrade %s to level %d/%d (%s / %s)",
+        "Request upgrade %s to level %d of %d [cost: %s, money: %s]",
         prodpoint.owningPlaceable:getName(),
         prodpoint.productionLevel,
-        UpgradableFactories.max_level,
+        UpgradableFactories.MAX_LEVEL,
         g_i18n:formatMoney(prodpoint.owningPlaceable.upgradePrice),
         g_i18n:formatMoney(money)
     )
-    if prodpoint.productionLevel >= UpgradableFactories.max_level then
-        g_gui:showInfoDialog({
-			text = g_i18n:getText("uf_max_level")
-		})
+
+    if prodpoint.productionLevel >= UpgradableFactories.MAX_LEVEL then
+        g_gui:showInfoDialog({text = g_i18n:getText("uf_max_level")})
         UFInfo("Production already at max level")
     elseif money >= prodpoint.owningPlaceable.upgradePrice then
         local text = string.format(
@@ -57,10 +46,17 @@ function InGameMenuUpgradableFactories:onButtonUpgrade()
             args=prodpoint
         })
     else
-        g_gui:showInfoDialog({
-			text = self.l10n:getText(ShopConfigScreen.L10N_SYMBOL.NOT_ENOUGH_MONEY_BUY)
-		})
+        g_gui:showInfoDialog({text = self.l10n:getText(ShopConfigScreen.L10N_SYMBOL.NOT_ENOUGH_MONEY_BUY)})
         UFInfo("Not enough money")
+    end
+end
+
+function InGameMenuUpgradableFactories.onListSelectionChanged(pageProduction, list, section, index)
+    local prodpoints = pageProduction:getProductionPoints()
+    if #prodpoints > 0 then
+        local prodpoint = prodpoints[section]
+        pageProduction.upgradeButtonInfo.disabled = not prodpoint.isUpgradable
+        pageProduction:setMenuButtonInfoDirty()
     end
 end
 
@@ -71,7 +67,7 @@ function InGameMenuUpgradableFactories:onUpgradeConfirm(confirm, prodpoint)
         prodpoint.productionLevel = prodpoint.productionLevel + 1
         UpgradableFactories:adjProdPoint2lvl(prodpoint, prodpoint.productionLevel)
      
-        g_currentMission.inGameMenu.pageProduction.productionList:reloadData()
+        self.pageProduction.productionList:reloadData()
         
         UFInfo("Upgrade confirmed")
     else
@@ -79,12 +75,8 @@ function InGameMenuUpgradableFactories:onUpgradeConfirm(confirm, prodpoint)
     end
 end
 
-function InGameMenuUpgradableFactories:updateMenuButtons()
-    local upgradeButtonInfo = {
-        profile = "buttonOK",
-        inputAction = InputAction.MENU_EXTRA_1,
-        text = g_i18n:getText("uf_upgrade"),
-        callback = InGameMenuUpgradableFactories.onButtonUpgrade
-    }
-    table.insert(g_currentMission.inGameMenu.pageProduction.menuButtonInfo, upgradeButtonInfo)
+function InGameMenuUpgradableFactories.updateMenuButtons(pageProduction)
+    if #pageProduction:getProductionPoints() > 0 then
+        table.insert(pageProduction.menuButtonInfo, pageProduction.upgradeButtonInfo)
+    end
 end
