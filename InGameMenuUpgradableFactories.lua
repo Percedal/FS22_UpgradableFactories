@@ -16,17 +16,11 @@ function InGameMenuUpgradableFactories:initialize()
     InGameMenuProductionFrame.onListSelectionChanged = Utils.appendedFunction(InGameMenuProductionFrame.onListSelectionChanged, InGameMenuUpgradableFactories.onListSelectionChanged)
 end
 
--- function InGameMenuUpgradableFactories:getProductionPoints()
---     return g_currentMission.inGameMenu.pageProduction:getProductionPoints()
--- end
-
 function InGameMenuUpgradableFactories:onButtonUpgrade()
-    -- local pageProduction = g_currentMission.inGameMenu.pageProduction
     local _, prodpoint = self.pageProduction:getSelectedProduction()
-
     local money = g_farmManager:getFarmById(g_currentMission:getFarmId()):getBalance()
     UFInfo(
-        "Request upgrade %s to level %d/%d (%s / %s)",
+        "Request upgrade %s to level %d of %d [cost: %s, money: %s]",
         prodpoint.owningPlaceable:getName(),
         prodpoint.productionLevel,
         UpgradableFactories.MAX_LEVEL,
