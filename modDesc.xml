@@ -25,7 +25,8 @@ Changelog <a href="https://github.com/Percedal/FS22_UpgradableFactories/releases
 - Added BR and IT translations
 - Fixed a bug blocking the game loading at 99%
 - Fixed a bug where levels were not properly attributed after restart
-- Pumps n' Hoses compatibility. The PnH biogas system being modular you will not be able to upgrade it with this mod.
+- Pumps n' Hoses compatibility. The PnH biogas system being modular you will not be able to upgrade it with this mod
+- Fixed an issue when deleting the mod where the production values where not reset
 
 Changelog <a href="https://github.com/Percedal/FS22_UpgradableFactories/releases/tag/v1.1.0.0">1.1.0.0</a>
 - Added RU translation
@@ -53,6 +54,7 @@ Changelog <a href="https://github.com/Percedal/FS22_UpgradableFactories/releases
 - Correction d'un bug bloquant le chargement à 99%
 - Correction d'un bug où les niveaux n'étaient pas correctement attribués après le redémarrage.
 - Compatibilité avec Pumps n' Hoses. Le système de biogaz PnH étant modulaire, vous ne pourrez pas le mettre à jour avec ce mod.
+- Correction d'un problème lors de la suppression du mod où la valeur des productions n'était pas réinitialisée.
 
 Changelog <a href="https://github.com/Percedal/FS22_UpgradableFactories/releases/tag/v1.1.0.0">1.1.0.0</a>
 - Ajout de la traduction russe
@@ -80,6 +82,7 @@ Changelog <a href="https://github.com/Percedal/FS22_UpgradableFactories/releases
 - Ein Fehler wurde behoben, der das Laden des Spiels bei 99% blockierte.
 - Ein Fehler wurde behoben, bei dem Ebenen nach einem Neustart nicht korrekt zugeordnet wurden.
 - Kompatibilität mit Pumps n' Hoses. Da das PnH-Biogassystem modular aufgebaut ist, können Sie es mit diesem Mod nicht aufrüsten.
+- Ein Problem beim Löschen des Mods wurde behoben, bei dem der Wert der Produktionen nicht zurückgesetzt wurde.
 
 Changelog <a href="https://github.com/Percedal/FS22_UpgradableFactories/releases/tag/v1.1.0.0">1.1.0.0</a>
 - Russische Übersetzung hinzugefügt
@@ -107,6 +110,7 @@ Registro delle modifiche <a href="https://github.com/Percedal/FS22_UpgradableFac
 - Risolto un bug che bloccava il caricamento del gioco al 99%
 - Risolto un bug per cui i livelli non venivano attribuiti correttamente dopo il riavvio
 - Compatibilità con Pumps n' Hoses. Essendo il sistema di biogas PnH modulare, non sarà possibile aggiornarlo con questa modifica.
+- Corretto un problema durante l'eliminazione della mod in cui il valore delle produzioni non veniva ripristinato.
 
 Registro delle modifiche <a href="https://github.com/Percedal/FS22_UpgradableFactories/releases/tag/v1.1.0.0">1.1.0.0</a>
 - Aggiunta la traduzione RU
