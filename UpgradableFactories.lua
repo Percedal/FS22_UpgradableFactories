@@ -1,8 +1,10 @@
-UpgradableFactories = {}
 local modDirectory = g_currentModDirectory
 local modName = g_currentModName
 local xmlFilename = nil
-UpgradableFactories.MAX_LEVEL = 10
+
+UpgradableFactories = {
+	MAX_LEVEL = 10
+}
 
 source(modDirectory .. "InGameMenuUpgradableFactories.lua")
 addModEventListener(UpgradableFactories)
@@ -19,7 +21,7 @@ function UpgradableFactories:loadMap()
 	
 	xmlFilename = g_currentMission.missionInfo.savegameDirectory .. "/upgradableFactories.xml"
 	self:loadXML()
-
+	
 	addConsoleCommand('ufMaxLevel', 'Update UpgradableFactories max level', 'updateml', self)
 	g_messageCenter:subscribe(MessageType.SAVEGAME_LOADED, self.onSavegameLoaded, self)
 end
@@ -46,12 +48,12 @@ local function getProductionPointFromPosition(pos)
 end
 
 local function getCapacityAtLvl(capacity, lvl)
-    -- Strorage capacity increase by it's base value each level
-    return math.floor(capacity * lvl)
+	-- Strorage capacity increase by it's base value each level
+	return math.floor(capacity * lvl)
 end
 
 local function getCycleAtLvl(cycle, lvl)
-    -- Production speed increase by it's base value each level.
+	-- Production speed increase by it's base value each level.
 	-- A bonus of 15% of the base speed is applied per level starting at the level 2
 	lvl = tonumber(lvl)
 	local adj = cycle * lvl + cycle * 0.15 * (lvl - 1)
@@ -63,7 +65,7 @@ local function getCycleAtLvl(cycle, lvl)
 end
 
 local function getActiveCostAtLvl(cost, lvl)
-    -- Running cost increase by it's base value each level
+	-- Running cost increase by it's base value each level
 	-- A reduction of 10% of the base cost is applied par level starting at the level 2
 	lvl = tonumber(lvl)
 	local adj = cost * lvl - cost * 0.1 * (lvl - 1)
@@ -75,8 +77,8 @@ local function getActiveCostAtLvl(cost, lvl)
 end
 
 local function getUpgradePriceAtLvl(basePrice, lvl)
-    -- Upgrade price increase by 10% each level
-    return math.floor(basePrice + basePrice * 0.1 * lvl)
+	-- Upgrade price increase by 10% each level
+	return math.floor(basePrice + basePrice * 0.1 * lvl)
 end
 
 local function getOverallProductionValue(basePrice, lvl)
@@ -89,7 +91,7 @@ local function getOverallProductionValue(basePrice, lvl)
 end
 
 local function prodPointUFName(basename, level)
-    return string.format("%d - %s", level, basename)
+	return string.format("%d - %s", level, basename)
 end
 
 function UpgradableFactories:adjProdPoint2lvl(prodpoint, lvl)
@@ -97,7 +99,7 @@ function UpgradableFactories:adjProdPoint2lvl(prodpoint, lvl)
 		prod.cyclesPerMinute = getCycleAtLvl(prod.baseCyclesPerMinute, lvl)
 		prod.cyclesPerHour = getCycleAtLvl(prod.baseCyclesPerHour, lvl)
 		prod.cyclesPerMonth = getCycleAtLvl(prod.baseCyclesPerMonth, lvl)
-
+		
 		prod.costsPerActiveMinute = getActiveCostAtLvl(prod.baseCostsPerActiveMinute, lvl)
 		prod.costsPerActiveHour = getActiveCostAtLvl(prod.baseCostsPerActiveHour, lvl)
 		prod.costsPerActiveMonth = getActiveCostAtLvl(prod.baseCostsPerActiveMonth, lvl)
@@ -106,12 +108,12 @@ function UpgradableFactories:adjProdPoint2lvl(prodpoint, lvl)
 	for ft,s in pairs(prodpoint.storage.baseCapacities) do
 		prodpoint.storage.capacities[ft] = getCapacityAtLvl(s, lvl)
 	end
-
+	
 	prodpoint.owningPlaceable.price = getOverallProductionValue(prodpoint.owningPlaceable.basePrice, lvl)
 	prodpoint.owningPlaceable.upgradePrice = getUpgradePriceAtLvl(prodpoint.owningPlaceable.basePrice, lvl)
-
+	
 	prodpoint.name = prodPointUFName(prodpoint.baseName, lvl)
-
+	
 	prodpoint.owningPlaceable.getSellPrice = function ()
 		local priceMultiplier = 0.75
 		local maxAge = prodpoint.owningPlaceable.storeItem.lifetime
@@ -126,17 +128,20 @@ function UpgradableFactories:initializeLoadedProductions()
 	if self.newSavegame or #self.loadedProductions < 1 then
 		return
 	end
-
+	
 	for _,loadedProd in ipairs(self.loadedProductions) do
 		local prodpoint = getProductionPointFromPosition(loadedProd.position)
-		if prodpoint and prodpoint.isUpgradable then
-			prodpoint.productionLevel = loadedProd.level
-			prodpoint.owningPlaceable.basePrice = loadedProd.basePrice
-			prodpoint.owningPlaceable.price = getOverallProductionValue(loadedProd.basePrice, loadedProd.level)
-
-			self:adjProdPoint2lvl(prodpoint, loadedProd.level)
-
-			prodpoint.storage.fillLevels = loadedProd.fillLevels
+		if prodpoint then
+			UFInfo("Initialize loaded production %s [is upgradable: %s]", prodpoint.baseName, prodpoint.isUpgradable)
+			if prodpoint.isUpgradable then
+				prodpoint.productionLevel = loadedProd.level
+				prodpoint.owningPlaceable.basePrice = loadedProd.basePrice
+				prodpoint.owningPlaceable.price = getOverallProductionValue(loadedProd.basePrice, loadedProd.level)
+				
+				self:adjProdPoint2lvl(prodpoint, loadedProd.level)
+				
+				prodpoint.storage.fillLevels = loadedProd.fillLevels
+			end
 		end
 	end
 end
@@ -145,7 +150,7 @@ function UpgradableFactories:initializeProduction(prodpoint)
 	if not prodpoint.isUpgradable then
 		prodpoint.isUpgradable = true
 		prodpoint.productionLevel = 1
-
+		
 		prodpoint.baseName = prodpoint:getName()
 		prodpoint.name = prodPointUFName(prodpoint:getName(), 1)
 		
@@ -160,7 +165,7 @@ function UpgradableFactories:initializeProduction(prodpoint)
 			prod.baseCostsPerActiveHour = prod.costsPerActiveHour
 			prod.baseCostsPerActiveMonth = prod.costsPerActiveMonth
 		end
-
+		
 		prodpoint.storage.baseCapacities = {}
 		for ft,val in pairs(prodpoint.storage.capacities) do
 			prodpoint.storage.baseCapacities[ft] = val
@@ -170,17 +175,20 @@ end
 
 function UpgradableFactories.onFinalizePlacement()
 	for _,prodpoint in ipairs(g_currentMission.productionChainManager.productionPoints) do
-		if not prodpoint.productionLevel and not prodpoint.owningPlaceable.customEnvironment then
-			UpgradableFactories:initializeProduction(prodpoint)
+		if not prodpoint.productionLevel then
+			UFInfo("initialize production %s [has custom env: %s]", prodpoint:getName(), tostring(prodpoint.owningPlaceable.customEnvironment))
+			if not prodpoint.owningPlaceable.customEnvironment then
+				UpgradableFactories:initializeProduction(prodpoint)
+			end
 		end
 	end
 end
 
 function UpgradableFactories.setOwnerFarmId(prodpoint, farmId)
-    if farmId == 0 and prodpoint.productions[1].baseCyclesPerMinute then
-        prodpoint.productionLevel = 1
-        UpgradableFactories:adjProdPoint2lvl(prodpoint, 1)
-    end
+	if farmId == 0 and prodpoint.productions[1].baseCyclesPerMinute then
+		prodpoint.productionLevel = 1
+		UpgradableFactories:adjProdPoint2lvl(prodpoint, 1)
+	end
 end
 
 function UpgradableFactories:updateml(arg)
@@ -188,7 +196,7 @@ function UpgradableFactories:updateml(arg)
 		print("ufMaxLevel <max_level>")
 		return
 	end
-
+	
 	local n = tonumber(arg)
 	if not n then
 		print("ufMaxLevel <max_level>")
@@ -199,11 +207,11 @@ function UpgradableFactories:updateml(arg)
 		print("<max_level> must be between 1 and 99")
 		return
 	end
-
+	
 	self.MAX_LEVEL = n
-
+	
 	self:initializeLoadedProductions()
-
+	
 	UFInfo("Production maximum level has been updated to level "..n, "")
 end
 
@@ -213,10 +221,10 @@ function UpgradableFactories.saveToXML()
 	if g_currentMission.missionInfo.savegameDirectory then
 		xmlFilename = g_currentMission.missionInfo.savegameDirectory .. "/upgradableFactories.xml"
 	end
-
+	
 	local xmlFile = XMLFile.create("UpgradableFactoriesXML", xmlFilename, "upgradableFactories")
 	xmlFile:setInt("upgradableFactories#maxLevel", UpgradableFactories.MAX_LEVEL)
-
+	
 	-- check if player has owned production installed
 	if #g_currentMission.productionChainManager.farmIds > 0 then	
 		local prodpoints = g_currentMission.productionChainManager.farmIds[1].productionPoints
@@ -227,11 +235,11 @@ function UpgradableFactories.saveToXML()
 				xmlFile:setString(key .. "#name", prodpoint.baseName)
 				xmlFile:setInt(key .. "#level", prodpoint.productionLevel)
 				xmlFile:setInt(key .. "#basePrice", prodpoint.owningPlaceable.basePrice)
-		
+				
 				local key2 = key .. ".position"
 				xmlFile:setFloat(key2 .. "#x", prodpoint.owningPlaceable.position.x)
 				xmlFile:setFloat(key2 .. "#y", prodpoint.owningPlaceable.position.y)
-
+				
 				local j = 0
 				key2 = ""
 				for ft,val in pairs(prodpoint.storage.fillLevels) do
@@ -244,73 +252,73 @@ function UpgradableFactories.saveToXML()
 			end
 		end
 	end
-    xmlFile:save()
+	xmlFile:save()
 end
 
 function UpgradableFactories:loadXML()
 	UFInfo("Loading XML...")
-
+	
 	if self.newSavegame then
 		UFInfo("New savegame")
 		return
 	end
-
-    local xmlFile = XMLFile.loadIfExists("UpgradableFactoriesXML", xmlFilename)
-    if not xmlFile then
+	
+	local xmlFile = XMLFile.loadIfExists("UpgradableFactoriesXML", xmlFilename)
+	if not xmlFile then
 		UFInfo("No XML file found")
 		return
-    end
-
-    local counter = 0
-    while true do
-        local key = string.format("upgradableFactories.production(%d)", counter)
+	end
+	
+	local counter = 0
+	while true do
+		local key = string.format("upgradableFactories.production(%d)", counter)
 		
 		if not getXMLInt(xmlFile.handle, key .. "#id") then break end
 		
 		local level = getXMLInt(xmlFile.handle,key .. "#level")
 		table.insert(
-			self.loadedProductions,
-			{
-				level = level,
-				name = getXMLString(xmlFile.handle, key .. "#name"),
-				basePrice = getXMLInt(xmlFile.handle,key .. "#basePrice"),
-				position = {
-					x = getXMLFloat(xmlFile.handle, key .. ".position#x"),
-					y = getXMLFloat(xmlFile.handle, key .. ".position#y")
-				}
+		self.loadedProductions,
+		{
+			level = level,
+			name = getXMLString(xmlFile.handle, key .. "#name"),
+			basePrice = getXMLInt(xmlFile.handle,key .. "#basePrice"),
+			position = {
+				x = getXMLFloat(xmlFile.handle, key .. ".position#x"),
+				y = getXMLFloat(xmlFile.handle, key .. ".position#y")
 			}
-		)
-
-		local capacities = {}
-		local counter2 = 0
-        while true do
-            local key2 = key .. string.format(".fillLevels.fillType(%d)", counter2)
-            
-			if not getXMLString(xmlFile.handle, key2 .. "#fillType") then break end
-
-			capacities[getXMLInt(xmlFile.handle, key2 .. "#id")] = getXMLInt(xmlFile.handle, key2 .. "#fillLevel")
-
-            counter2 = counter2 +1
-        end
-
-		self.loadedProductions[counter+1].fillLevels = capacities
+		}
+	)
+	
+	local capacities = {}
+	local counter2 = 0
+	while true do
+		local key2 = key .. string.format(".fillLevels.fillType(%d)", counter2)
 		
-        counter = counter +1
-    end
-
-	local ml = getXMLInt(xmlFile.handle, "upgradableFactories#maxLevel")
-	if ml and ml > 0 and ml < 100 then
-		self.MAX_LEVEL = ml
+		if not getXMLString(xmlFile.handle, key2 .. "#fillType") then break end
+		
+		capacities[getXMLInt(xmlFile.handle, key2 .. "#id")] = getXMLInt(xmlFile.handle, key2 .. "#fillLevel")
+		
+		counter2 = counter2 +1
 	end
-	UFInfo(#self.loadedProductions.." productions loaded from XML")
-	UFInfo("Production maximum level: "..self.MAX_LEVEL)
-	if #self.loadedProductions > 0 then
-		for _,p in ipairs(self.loadedProductions) do
-			if p.level > self.MAX_LEVEL then
-				UFInfo("%s over max level: %d", p.name, p.level)
-			end
+	
+	self.loadedProductions[counter+1].fillLevels = capacities
+	
+	counter = counter +1
+end
+
+local ml = getXMLInt(xmlFile.handle, "upgradableFactories#maxLevel")
+if ml and ml > 0 and ml < 100 then
+	self.MAX_LEVEL = ml
+end
+UFInfo(#self.loadedProductions.." productions loaded from XML")
+UFInfo("Production maximum level: "..self.MAX_LEVEL)
+if #self.loadedProductions > 0 then
+	for _,p in ipairs(self.loadedProductions) do
+		if p.level > self.MAX_LEVEL then
+			UFInfo("%s over max level: %d", p.name, p.level)
 		end
 	end
+end
 end
 
 PlaceableProductionPoint.onFinalizePlacement = Utils.appendedFunction(PlaceableProductionPoint.onFinalizePlacement, UpgradableFactories.onFinalizePlacement)
