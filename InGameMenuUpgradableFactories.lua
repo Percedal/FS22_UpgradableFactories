@@ -20,7 +20,7 @@ function InGameMenuUpgradableFactories:onButtonUpgrade()
     local _, prodpoint = self.pageProduction:getSelectedProduction()
     local money = g_farmManager:getFarmById(g_currentMission:getFarmId()):getBalance()
     UFInfo(
-        "Request upgrade %s to level %d of %d [cost: %s, money: %s]",
+        "Request upgrade %s to level %d of %d [cost: %s | money: %s]",
         prodpoint.owningPlaceable:getName(),
         prodpoint.productionLevel,
         UpgradableFactories.MAX_LEVEL,

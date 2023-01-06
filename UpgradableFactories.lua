@@ -19,7 +19,9 @@ function UpgradableFactories:loadMap()
 	
 	InGameMenuUpgradableFactories:initialize()
 	
-	xmlFilename = g_currentMission.missionInfo.savegameDirectory .. "/upgradableFactories.xml"
+	if not self.newSavegame then
+		xmlFilename = g_currentMission.missionInfo.savegameDirectory .. "/upgradableFactories.xml"
+	end
 	self:loadXML()
 	
 	addConsoleCommand('ufMaxLevel', 'Update UpgradableFactories max level', 'updateml', self)
@@ -111,6 +113,7 @@ function UpgradableFactories:adjProdPoint2lvl(prodpoint, lvl)
 		prodpoint.storage.capacities[ft] = getCapacityAtLvl(s, lvl)
 	end
 	
+	prodpoint.owningPlaceable.totalValue = getOverallProductionValue(prodpoint.owningPlaceable.price, lvl)
 	prodpoint.owningPlaceable.upgradePrice = getUpgradePriceAtLvl(prodpoint.owningPlaceable.price, lvl)
 	prodpoint.owningPlaceable.getSellPrice = function ()
 		local priceMultiplier = 0.75
@@ -176,7 +179,7 @@ function UpgradableFactories.onFinalizePlacement()
 	for _,prodpoint in ipairs(g_currentMission.productionChainManager.productionPoints) do
 		if not prodpoint.productionLevel then
 			UFInfo("initialize production %s [has custom env: %s]", prodpoint:getName(), tostring(prodpoint.owningPlaceable.customEnvironment))
-			if not prodpoint.owningPlaceable.customEnvironment then
+			if prodpoint.owningPlaceable.customEnvironment ~= "pdlc_pumpsAndHosesPack" then
 				UpgradableFactories:initializeProduction(prodpoint)
 			end
 		end
