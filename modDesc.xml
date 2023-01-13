@@ -9,6 +9,7 @@
         <ru>Улучшаемые Производства</ru>
         <br>Fábricas atualizáveis</br>
         <it>Fabbriche potenziabili</it>
+	    <tr>Yükseltilebilir Fabrikalar</tr>
     </title>
     <description>
         <en><![CDATA[
@@ -137,6 +138,7 @@ Grazie ai collaboratori di github]]>
             <ru>Улучшить</ru>
             <br>Atualização</br>
             <it>Aggiornamento</it>
+		    <tr>Yükselt</tr>
         </text>
         <text name="uf_upgrade_dialog">
             <en>Upgrade %s to level %d for %s?</en>
@@ -145,6 +147,7 @@ Grazie ai collaboratori di github]]>
             <ru>Улучшить %s до уровня %d за %s?</ru>
             <br>Atualização %s para o nível %d para %s?</br>
             <it>Aggiorna %s al livello %d per %s?</it>
+		    <tr>%s %d seviyeye %s karşılığında yükseltilsin mi?</tr>
         </text>
         <text name="uf_max_level">
             <en>Your production is already at maximum level.</en>
@@ -153,6 +156,7 @@ Grazie ai collaboratori di github]]>
             <ru>Ваше производство уже на максимальном уровне.</ru>
             <br>Sua produção já está no nível máximo.</br>
             <it>La tua produzione è già al massimo livello.</it>
+		    <tr>Üretiminiz zaten maksimum seviyede.</tr>
         </text>
     </l10n>
 </modDesc>
