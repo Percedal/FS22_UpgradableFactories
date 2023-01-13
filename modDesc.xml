@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="72">
     <author>Az#4971</author>
-    <version>1.2.0.0</version>
+    <version>1.2.1.0</version>
     <title>
         <en>Upgradable Factories</en>
         <fr>Usines Améliorables</fr>
@@ -9,6 +9,7 @@
         <ru>Улучшаемые Производства</ru>
         <br>Fábricas atualizáveis</br>
         <it>Fabbriche potenziabili</it>
+        <tr>Yükseltilebilir Fabrikalar</tr>
     </title>
     <description>
         <en><![CDATA[
@@ -20,6 +21,9 @@ Features :
 - More production speed means more storage space.
 - Because you don't have to build a new facility, you save on production costs.
 - Factory value is increased when upgrading, so you can claim your investment back when selling a facility.
+
+Changelog <a href="https://github.com/Percedal/FS22_UpgradableFactories/releases/tag/v1.2.1.0">1.2.1.0</a>
+- Added Turkish translation
 
 Changelog <a href="https://github.com/Percedal/FS22_UpgradableFactories/releases/tag/v1.2.0.0">1.2.0.0</a>
 - Added BR and IT translations
@@ -49,6 +53,9 @@ Caractéristiques :
 - Comme vous n'avez pas besoin de construire une nouvelle usine, vous économisez sur les coûts de production.
 - La valeur de l'usine augmente lors de la mise à niveau, ce qui vous permet de récupérer votre investissement lors de la vente d'une installation.
 
+Changelog <a href="https://github.com/Percedal/FS22_UpgradableFactories/releases/tag/v1.2.1.0">1.2.1.0</a>
+- Ajout de la traduction turc
+
 Changelog <a href="https://github.com/Percedal/FS22_UpgradableFactories/releases/tag/v1.2.0.0">1.2.0.0</a>
 - Ajout des traductions brésilienne et italienne
 - Correction d'un bug bloquant le chargement à 99%
@@ -77,6 +84,9 @@ Eigenschaften:
 - Da Sie keine neue Anlage bauen müssen, sparen Sie Produktionskosten.
 - Der Wert der Fabrik wird durch die Aufrüstung erhöht, so dass Sie beim Verkauf einer Anlage Ihre Investition zurückerhalten können.
 
+Changelog <a href="https://github.com/Percedal/FS22_UpgradableFactories/releases/tag/v1.2.1.0">1.2.1.0</a>
+- Türkische Übersetzung hinzugefügt
+
 Changelog <a href="https://github.com/Percedal/FS22_UpgradableFactories/releases/tag/v1.2.0.0">1.2.0.0</a>
 - Brasilianische und italienische Übersetzungen hinzugefügt
 - Ein Fehler wurde behoben, der das Laden des Spiels bei 99% blockierte.
@@ -104,6 +114,9 @@ Caratteristiche :
 - Più velocità di produzione significa più spazio di archiviazione.
 - Poiché non devi costruire una nuova struttura, risparmi sui costi di produzione.
 - Il valore della fabbrica aumenta durante l'aggiornamento, quindi puoi richiedere il rimborso dell'investimento quando vendi una struttura.
+
+Registro delle modifiche <a href="https://github.com/Percedal/FS22_UpgradableFactories/releases/tag/v1.2.1.0">1.2.1.0</a>
+- Aggiunta la traduzione in turco
 
 Registro delle modifiche <a href="https://github.com/Percedal/FS22_UpgradableFactories/releases/tag/v1.2.0.0">1.2.0.0</a>
 - Aggiunta di traduzioni BR e IT
@@ -137,6 +150,7 @@ Grazie ai collaboratori di github]]>
             <ru>Улучшить</ru>
             <br>Atualização</br>
             <it>Aggiornamento</it>
+            <tr>Yükselt</tr>
         </text>
         <text name="uf_upgrade_dialog">
             <en>Upgrade %s to level %d for %s?</en>
@@ -145,6 +159,7 @@ Grazie ai collaboratori di github]]>
             <ru>Улучшить %s до уровня %d за %s?</ru>
             <br>Atualização %s para o nível %d para %s?</br>
             <it>Aggiorna %s al livello %d per %s?</it>
+            <tr>%s %d seviyeye %s karşılığında yükseltilsin mi?</tr>
         </text>
         <text name="uf_max_level">
             <en>Your production is already at maximum level.</en>
@@ -153,6 +168,7 @@ Grazie ai collaboratori di github]]>
             <ru>Ваше производство уже на максимальном уровне.</ru>
             <br>Sua produção já está no nível máximo.</br>
             <it>La tua produzione è già al massimo livello.</it>
+            <tr>Üretiminiz zaten maksimum seviyede.</tr>
         </text>
     </l10n>
 </modDesc>
