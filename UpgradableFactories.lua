@@ -42,7 +42,7 @@ local function getProductionPointFromPosition(pos)
 	end
 	
 	for _,prod in ipairs(g_currentMission.productionChainManager.farmIds[1].productionPoints) do
-		if MathUtil.getPointPointDistanceSquared(pos.x, pos.y, prod.owningPlaceable.position.x, prod.owningPlaceable.position.y) < 0.0001 then
+		if MathUtil.getPointPointDistanceSquared(pos.x, pos.z, prod.owningPlaceable.position.x, prod.owningPlaceable.position.z) < 0.0001 then
 			return prod
 		end
 	end
@@ -243,6 +243,7 @@ function UpgradableFactories.saveToXML()
 				local key2 = key .. ".position"
 				xmlFile:setFloat(key2 .. "#x", prodpoint.owningPlaceable.position.x)
 				xmlFile:setFloat(key2 .. "#y", prodpoint.owningPlaceable.position.y)
+				xmlFile:setFloat(key2 .. "#z", prodpoint.owningPlaceable.position.z)
 				
 				local j = 0
 				key2 = ""
@@ -289,7 +290,8 @@ function UpgradableFactories:loadXML()
 				basePrice = getXMLInt(xmlFile.handle,key .. "#basePrice"),
 				position = {
 					x = getXMLFloat(xmlFile.handle, key .. ".position#x"),
-					y = getXMLFloat(xmlFile.handle, key .. ".position#y")
+					y = getXMLFloat(xmlFile.handle, key .. ".position#y"),
+					z = getXMLFloat(xmlFile.handle, key .. ".position#z")
 				}
 			}
 		)
