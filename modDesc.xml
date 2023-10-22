@@ -10,6 +10,7 @@
         <br>Fábricas atualizáveis</br>
         <it>Fabbriche potenziabili</it>
         <tr>Yükseltilebilir Fabrikalar</tr>
+        <pl>Ulepszalne Fabryki</pl>
     </title>
     <description>
         <en><![CDATA[
@@ -136,6 +137,38 @@ Al momento, questa mod non supporta il multiplayer.
 Ulteriori informazioni su <a href="https://github.com/Percedal/FS22_UpgradableFactories">GitHub</a>.
 Grazie ai collaboratori di github]]>
        </it>
+        <pl><![CDATA[
+            Ulepszaj swoje zakłady produkcyjne! Dzięki temu modowi będziesz w stanie zwiększyć szybkość produkcji i pojemność magazynów, dzięki czemu nie będziesz musiał budować wielu fabryk.
+Funkcje:
+- Łańcuchy produkcyjne mają teraz poziomy, które możesz zwiększyć.
+- Ulepszanie fabryki będzie kosztować cię nieco więcej w każdym poziomie niż zakup nowego budynku.
+- Koszty ulepszania w znacznym stopniu rekompensowane są przez zysk w szybkości produkcji.
+- Większa szybkość produkcji oznacza więcej miejsca w magazynach.
+- Ponieważ nie musisz budować nowego obiektu, oszczędzasz na kosztach produkcji.
+- Wartość fabryki wzrasta wraz z ulepszaniem, więc możesz odzyskać inwestycję przy sprzedaży obiektu.
+
+Changelog <a href="https://github.com/Percedal/FS22_UpgradableFactories/releases/tag/v1.2.1.0">1.2.1.0</a>
+- Dodano tłumaczenie na język turecki.
+
+Changelog <a href="https://github.com/Percedal/FS22_UpgradableFactories/releases/tag/v1.2.0.0">1.2.0.0</a>
+- Dodano tłumaczenia na języki portugalski i włoski.
+- Naprawiono błąd blokujący załadowanie gry na 99%.
+- Naprawiono błąd, w którym poziomy nie były właściwie przydzielane po restarcie.
+- Kompatybilność z modułem Pumps n' Hoses. System biogazu PnH jest modułowy, więc nie będzie można go ulepszyć tym modułem.
+- Naprawiono problem z resetowaniem wartości produkcji podczas usuwania modułu.
+
+Changelog <a href="https://github.com/Percedal/FS22_UpgradableFactories/releases/tag/v1.1.0.0">1.1.0.0</a>
+- Dodano tłumaczenie na język rosyjski.
+- Naprawiono błąd blokujący załadowanie gry na 99%.
+- Fabryki mają teraz maksymalny poziom (domyślnie 10).
+- Dodano polecenie konsoli do modyfikacji maksymalnego poziomu fabryki (ufMaxLevel).
+
+Należy zauważyć, że maksymalny poziom, który można osiągnąć, to 10.
+Niestety, ten mod nie obsługuje jeszcze gry wieloosobowej.
+Więcej informacji na <a href="https://github.com/Percedal/FS22_UpgradableFactories">GitHub</a>.
+Dzięki dla współtwórców na GitHubie.]]>
+        </pl>
+
     </description>
     <iconFilename>icon.dds</iconFilename>
     <multiplayer supported="false"/>
@@ -151,6 +184,7 @@ Grazie ai collaboratori di github]]>
             <br>Atualização</br>
             <it>Aggiornamento</it>
             <tr>Yükselt</tr>
+            <pl>Ulepsz</pl>
         </text>
         <text name="uf_upgrade_dialog">
             <en>Upgrade %s to level %d for %s?</en>
@@ -160,6 +194,7 @@ Grazie ai collaboratori di github]]>
             <br>Atualização %s para o nível %d para %s?</br>
             <it>Aggiorna %s al livello %d per %s?</it>
             <tr>%s %d seviyeye %s karşılığında yükseltilsin mi?</tr>
+            <pl>Ulepszyć %s do poziomu %d dla %s?</pl>
         </text>
         <text name="uf_max_level">
             <en>Your production is already at maximum level.</en>
@@ -169,6 +204,7 @@ Grazie ai collaboratori di github]]>
             <br>Sua produção já está no nível máximo.</br>
             <it>La tua produzione è già al massimo livello.</it>
             <tr>Üretiminiz zaten maksimum seviyede.</tr>
+            <pl>Twoja fabryka jest już na maksymalnym poziomie.</pl>
         </text>
     </l10n>
 </modDesc>
